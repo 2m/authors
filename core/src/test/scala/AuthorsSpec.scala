@@ -1,71 +1,69 @@
 package lt.dvim.authors
 
-import java.io.File
 import java.nio.file.Paths
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.FileIO
+import akka.stream.scaladsl.{FileIO, Sink}
 import akka.testkit.TestKit
-import cats.implicits._
-import io.circe.streaming._
+import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
+import com.typesafe.config.ConfigFactory
+import lt.dvim.authors.GithubProtocol.{Commit, CommitUrl}
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+import org.scalatest.{BeforeAndAfterAll, Inside, Matchers, WordSpecLike}
 
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
 
-class AuthorsSpec extends TestKit(ActorSystem("AuthorsSpec")) with WordSpecLike with BeforeAndAfterAll with ScalaFutures {
+object AuthorsSpec {
+  val config = ConfigFactory.parseString("""
+      |akka.loglevel = DEBUG
+    """.stripMargin)
+}
 
-  import lt.dvim.AkkaStreamIterateeIoSpec._
-  //import system.dispatcher
-  //import scala.concurrent.ExecutionContext.Implicits.global
+class AuthorsSpec
+    extends TestKit(ActorSystem("AuthorsSpec", AuthorsSpec.config.withFallback(ConfigFactory.load)))
+    with WordSpecLike
+    with BeforeAndAfterAll
+    with Matchers
+    with Inside
+    with ScalaFutures {
 
-
-
-  implicit val mat = ActorMaterializer()
+  implicit val mat             = ActorMaterializer()
   implicit val defaultPatience = PatienceConfig(timeout = 5.seconds, interval = 30.millis)
 
   "authors" should {
-    "parse" in {
-      import system.dispatcher
+    "parse compare json" in {
+      val res = FileIO
+        .fromPath(Paths.get(getClass.getResource("/compare.json").toURI), 64)
+        .via(ActsonReader.instance)
+        .via(ProtocolReader.of(GithubProtocol.compareProto))
+        .runFold(Seq.empty[CommitUrl])(_ :+ _)
 
-      val futModule = io.iteratee.modules.future
-      val futFileModule = io.iteratee.files.future
-
-      val parse = byteParser[Future]
-      val decode = decoder[Future, Commit]
-
-      val source = FileIO.fromPath(Paths.get("/home/martynas/projects/authors/core/target/scala-2.11/test-classes/diff.json"), 64)
-
-      val res = source
-        .map(_.toArray)
-        .via(new EnumerateeIoStage(parse))
-        .runForeach(println)
-
-      res.futureValue
+      res.futureValue should have length 43
     }
 
-    "parse with circe" in {
-      import scala.concurrent.ExecutionContext.Implicits.global
+    "parse commit json" in {
+      val res = FileIO
+        .fromPath(Paths.get(getClass.getResource("/commit.json").toURI), 64)
+        .via(ActsonReader.instance)
+        .via(ProtocolReader.of(GithubProtocol.commitProto))
+        .runWith(Sink.head)
 
-      val futModule = io.iteratee.modules.future(scala.concurrent.ExecutionContext.Implicits.global)
-      val futFileModule = io.iteratee.files.future(scala.concurrent.ExecutionContext.Implicits.global)
+      inside(res.futureValue) {
+        case Commit(Some(author), _, _) => author.login should be("2m")
+      }
+    }
 
-      import futModule._
-      import futFileModule._
+    "parse commit with no github author json" in {
+      val res = FileIO
+        .fromPath(Paths.get(getClass.getResource("/commit_no_github_author.json").toURI), 64)
+        .via(ActsonReader.instance)
+        .via(ProtocolReader.of(GithubProtocol.commitProto))
+        .runWith(Sink.head)
 
-      val commits = listFiles(new File("/home/martynas/projects/authors/core/target/scala-2.11/test-classes/diff_array.json"))//.through(byteParser).through(decoder[Future, Commit])
-
-      //val commits = iterate(1)(_ + 1)
-
-      val total = commits.into(takeI(1))
-
-      //total.failed.futureValue.printStackTrace()
-
-      println(total.futureValue)
-
-      Thread.sleep(5000)
+      inside(res.futureValue) {
+        case Commit(None, author, _) => author.name should be("Veiga Ortiz, Héctor")
+      }
     }
   }
 

@@ -5,13 +5,13 @@ lazy val authors = project
 lazy val core = project
   .settings(
     name := "authors-core",
+    resolvers += Resolver.bintrayRepo("jypma", "maven"),
+    resolvers += Resolver.bintrayRepo("readytalk", "maven"), // to resolve deps of ts-reaktive
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-http"       % "10.0.1",
-      "io.circe"          %% "circe-generic"   % "0.7.0-M2",
-      "io.circe"          %% "circe-streaming" % "0.7.0-M2",
-      "io.iteratee"       %% "iteratee-files"  % "0.8.0",
-      "org.scalatest"     %% "scalatest"       % "3.0.1"     % Test,
-      "com.typesafe.akka" %% "akka-testkit"    % "2.4.16"    % Test
+      "com.typesafe.akka" %% "akka-http"               % "10.0.5",
+      "com.tradeshift"    % "ts-reaktive-marshal-akka" % "0.0.23",
+      "org.scalatest"     %% "scalatest"               % "3.0.1" % Test,
+      "com.typesafe.akka" %% "akka-testkit"            % "2.4.17" % Test
     )
   )
 

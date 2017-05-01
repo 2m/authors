@@ -1,18 +1,58 @@
 package lt.dvim.authors
 
-import cats.syntax.either._ // not needed from scala 2.12
-import io.circe.Decoder
+import akka.actor.ActorSystem
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.marshalling.Marshal
+import akka.http.scaladsl.marshalling.PredefinedToRequestMarshallers._
+import akka.http.scaladsl.model.{HttpRequest, Uri}
+import akka.stream.ActorMaterializer
+import akka.stream.scaladsl.Source
+import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
+import com.typesafe.config.ConfigFactory
 
-final case class Author(name: String, login: String, url: String)
-final case class Commit(sha: String, author: Author)
+object Authors extends App {
 
-object Commit {
-  implicit val decodeCommit: Decoder[Commit] = Decoder.instance(c =>
-    for {
-      sha <- c.downField("sha").as[String]
-      name <- c.downField("commit").downField("author").downField("name").as[String]
-      login <- c.downField("author").downField("login").as[String]
-      url <- c.downField("author").downField("url").as[String]
-    } yield Commit(sha, Author(name, login, url))
-  )
+  val (repo, from, to) = args.toList match {
+    case repo :: from :: to :: Nil => (repo, from, to)
+    case _ =>
+      println("""
+        |Usage:
+        |  <repo> <from> <to>
+      """.stripMargin)
+      System.exit(1)
+  }
+
+  val config = ConfigFactory.parseString("""
+      |akka.loglevel = DEBUG
+    """.stripMargin)
+
+  implicit val sys = ActorSystem("Authors", config.withFallback(ConfigFactory.load))
+  implicit val mat = ActorMaterializer()
+
+  import sys.dispatcher
+
+  val completion = response(s"https://api.github.com/repos/$repo/compare/$from...$to")
+    .via(ActsonReader.instance)
+    .via(ProtocolReader.of(GithubProtocol.compareProto))
+    .flatMapConcat { commit =>
+      response(commit.url)
+        .via(ActsonReader.instance)
+        .via(ProtocolReader.of(GithubProtocol.commitProto))
+    }
+    .runForeach(println)
+
+  scala.io.StdIn.readLine()
+
+  sys.terminate()
+
+  def response(url: String) =
+    Source
+      .fromFuture(
+        Marshal(Uri(url))
+          .to[HttpRequest]
+          .flatMap(Http().singleRequest(_))
+          .map(_.entity.dataBytes)
+      )
+      .flatMapConcat(identity)
+
 }
