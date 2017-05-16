@@ -8,13 +8,14 @@ lazy val core = project
     resolvers += Resolver.bintrayRepo("jypma", "maven"),
     resolvers += Resolver.bintrayRepo("readytalk", "maven"), // to resolve deps of ts-reaktive
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-http"               % "10.0.5",
-      "com.tradeshift"    % "ts-reaktive-marshal-akka" % "0.0.23",
-      "org.scalatest"     %% "scalatest"               % "3.0.1" % Test,
-      "com.typesafe.akka" %% "akka-testkit"            % "2.4.17" % Test
+      "com.typesafe.akka"    %% "akka-http"               % "10.0.5",
+      "com.tradeshift"       % "ts-reaktive-marshal-akka" % "0.0.23",
+      "com.madgag.scala-git" %% "scala-git"               % "3.4",
+      "org.scalatest"        %% "scalatest"               % "3.0.1" % Test,
+      "com.typesafe.akka"    %% "akka-testkit"            % "2.4.17" % Test
     )
   )
 
 inThisBuild(
-  organization := "lt.dvim"
+  organization := "lt.dvim.authors"
 )
