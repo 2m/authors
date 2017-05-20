@@ -5,15 +5,16 @@ import java.nio.file.Paths
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{FileIO, Sink}
+import akka.stream.scaladsl.{FileIO, Sink, Source}
 import akka.testkit.TestKit
 import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
 import com.typesafe.config.ConfigFactory
-import lt.dvim.authors.GithubProtocol.{Commit, Stats}
+import lt.dvim.authors.GithubProtocol._
 import org.eclipse.jgit.internal.storage.file.FileRepository
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, Inside, Matchers, WordSpecLike}
+
 import scala.concurrent.duration._
 
 object AuthorsSpec {
@@ -46,7 +47,49 @@ class AuthorsSpec
 
     "get commit stats from sha" in {
       implicit val repo = Authors.gitRepo(".git/modules/core/src/test/resources/authors-test-repo")
-      Authors.shaToStats("e5fee6f") shouldBe Stats(additions = 4, deletions = 1)
+      Authors.shaToStats("e5fee6f") shouldBe Stats(additions = 4, deletions = 1, commits = 1)
+    }
+
+    "get stats when multiple chunks invloved" in {
+      implicit val repo = Authors.gitRepo(".git/modules/core/src/test/resources/authors-test-repo")
+      val stats = Source(
+        List(
+          Commit("f576a45",
+                 GitAuthor("test", "test@test.lt"),
+                 Some(GithubAuthor("test", "http://users/test", "http://avatars/test"))),
+          Commit("bce0e63",
+                 GitAuthor("test", "test@test.lt"),
+                 Some(GithubAuthor("test", "http://users/test", "http://avatars/test")))
+        ))
+        .via(StatsAggregator())
+        .runWith(Sink.head)
+
+      whenReady(stats) {
+        _ should matchPattern {
+          case AuthorStats(_, _, Stats(9, 0, 2)) =>
+        }
+      }
+    }
+
+    "get stats when different emails but same github login" in {
+      implicit val repo = Authors.gitRepo(".git/modules/core/src/test/resources/authors-test-repo")
+      val stats = Source(
+        List(
+          Commit("f576a45",
+            GitAuthor("test", "test1@test.lt"),
+            Some(GithubAuthor("test", "http://users/test", "http://avatars/test"))),
+          Commit("bce0e63",
+            GitAuthor("test", "test2@test.lt"),
+            Some(GithubAuthor("test", "http://users/test", "http://avatars/test")))
+        ))
+        .via(StatsAggregator())
+        .runWith(Sink.head)
+
+      whenReady(stats) {
+        _ should matchPattern {
+          case AuthorStats(_, _, Stats(9, 0, 2)) =>
+        }
+      }
     }
   }
 

@@ -66,7 +66,7 @@ object Authors extends App {
 
   def gitRepo(path: String): FileRepository =
     FileRepositoryBuilder
-      .create(new File(path + "/.git"))
+      .create(new File(if (path.contains(".git")) path else path + "/.git"))
       .asInstanceOf[FileRepository]
 
   def shaToStats(sha: String)(implicit repo: FileRepository): Stats = {
@@ -84,7 +84,7 @@ object Authors extends App {
         }
       }
       .reduce((sum, stats) =>
-        Stats(sum.additions + stats.additions, sum.deletions + stats.deletions, sum.commits + stats.commits))
+        Stats(sum.additions + stats.additions, sum.deletions + stats.deletions, 1))
   }
 }
 
@@ -112,7 +112,7 @@ object SortingMachine {
 object StatsAggregator {
   def apply()(implicit repo: FileRepository): Flow[Commit, AuthorStats, NotUsed] =
     Flow[Commit]
-      .groupBy(MaxAuthors, _.gitAuthor.email)
+      .groupBy(MaxAuthors, commit => commit.githubAuthor.map(_.login).getOrElse(commit.gitAuthor.email))
       .map(commit => AuthorStats(commit.gitAuthor, commit.githubAuthor, Authors.shaToStats(commit.sha)))
       .reduce(
         (aggr, elem) =>
