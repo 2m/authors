@@ -112,6 +112,7 @@ object SortingMachine {
 object StatsAggregator {
   def apply()(implicit repo: FileRepository): Flow[Commit, AuthorStats, NotUsed] =
     Flow[Commit]
+      .filterNot(_.message.startsWith("Merge pull request"))
       .groupBy(MaxAuthors, commit => commit.githubAuthor.map(_.login).getOrElse(commit.gitAuthor.email))
       .map(commit => AuthorStats(commit.gitAuthor, commit.githubAuthor, Authors.shaToStats(commit.sha)))
       .reduce(

@@ -11,7 +11,7 @@ object GithubProtocol {
   final case class GithubAuthor(login: String, url: String, avatar: String)
   final case class GitAuthor(name: String, email: String)
   final case class Stats(additions: Int, deletions: Int, commits: Int)
-  final case class Commit(sha: String, gitAuthor: GitAuthor, githubAuthor: Option[GithubAuthor])
+  final case class Commit(sha: String, message: String, gitAuthor: GitAuthor, githubAuthor: Option[GithubAuthor])
   final case class AuthorStats(gitAuthor: GitAuthor, githubAuthor: Option[GithubAuthor], stats: Stats)
 
   val compareProto =
@@ -29,11 +29,14 @@ object GithubProtocol {
       ),
       field("commit",
             `object`(
-              field("author", gitAuthorProto)
+              field("author", gitAuthorProto),
+              field("message", stringValue),
+              (gitAuthor: GitAuthor, message: String) =>
+                (gitAuthor, message)
             )),
       field("sha", stringValue),
-      (githubAuthor: VavrOption[GithubAuthor], gitAuthor: GitAuthor, sha: String) =>
-        Commit(sha, gitAuthor, githubAuthor)
+      (githubAuthor: VavrOption[GithubAuthor], gitAuthorAndMessage: (GitAuthor, String), sha: String) =>
+        Commit(sha, gitAuthorAndMessage._2, gitAuthorAndMessage._1, githubAuthor)
     )
 
   lazy val gitAuthorProto =
