@@ -54,10 +54,10 @@ class AuthorsSpec
       implicit val repo = Authors.gitRepo(".git/modules/core/src/test/resources/authors-test-repo")
       val stats = Source(
         List(
-          Commit("f576a45",
+          Commit("f576a45", "message",
                  GitAuthor("test", "test@test.lt"),
                  Some(GithubAuthor("test", "http://users/test", "http://avatars/test"))),
-          Commit("bce0e63",
+          Commit("bce0e63", "message",
                  GitAuthor("test", "test@test.lt"),
                  Some(GithubAuthor("test", "http://users/test", "http://avatars/test")))
         ))
@@ -75,10 +75,10 @@ class AuthorsSpec
       implicit val repo = Authors.gitRepo(".git/modules/core/src/test/resources/authors-test-repo")
       val stats = Source(
         List(
-          Commit("f576a45",
+          Commit("f576a45", "message",
             GitAuthor("test", "test1@test.lt"),
             Some(GithubAuthor("test", "http://users/test", "http://avatars/test"))),
-          Commit("bce0e63",
+          Commit("bce0e63", "message",
             GitAuthor("test", "test2@test.lt"),
             Some(GithubAuthor("test", "http://users/test", "http://avatars/test")))
         ))

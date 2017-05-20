@@ -106,7 +106,7 @@ object SortingMachine {
   def apply(): Flow[AuthorStats, AuthorStats, NotUsed] =
     Flow[AuthorStats]
       .grouped(MaxAuthors)
-      .mapConcat(_.sortBy(-_.stats.commits))
+      .mapConcat(_.sortBy(s => (s.stats.commits, s.stats.additions, s.stats.deletions)).reverse)
 }
 
 object StatsAggregator {
