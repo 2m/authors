@@ -1,13 +1,15 @@
 package lt.dvim.authors
 
+import java.io.File
+
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.marshalling.PredefinedToRequestMarshallers._
 import akka.http.scaladsl.model.{HttpRequest, Uri}
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.Source
+import akka.stream.{ActorMaterializer, Materializer}
+import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
 import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
 import com.typesafe.config.ConfigFactory
@@ -15,40 +17,81 @@ import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.internal.storage.file.FileRepository
 import org.eclipse.jgit.util.io.DisabledOutputStream
 import com.madgag.git._
+import lt.dvim.authors.Authors.MaxAuthors
+import lt.dvim.authors.GithubProtocol.{AuthorStats, Commit, Stats}
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+
 import scala.collection.JavaConversions._
+import scala.concurrent.ExecutionContext
 
 object Authors extends App {
 
-  val (repo, from, to) = args.toList match {
-    case repo :: from :: to :: Nil => (repo, from, to)
+  final val MaxAuthors = 1024
+
+  val (repo, from, to, path) = args.toList match {
+    case repo :: from :: to :: path :: Nil => (repo, from, to, path)
     case _ =>
       println("""
         |Usage:
-        |  <repo> <from> <to>
+        |  <repo> <from> <to> <path>
       """.stripMargin)
       System.exit(1)
       ???
   }
 
   val config = ConfigFactory.parseString("""
-      |akka.loglevel = DEBUG
+      |akka.loglevel = ERROR
     """.stripMargin)
 
-  implicit val sys = ActorSystem("Authors", config.withFallback(ConfigFactory.load))
-  implicit val mat = ActorMaterializer()
+  implicit val sys           = ActorSystem("Authors", config.withFallback(ConfigFactory.load))
+  implicit val mat           = ActorMaterializer()
+  implicit val gitRepository = Authors.gitRepo(path)
+
+  println(gitRepository.getDirectory)
 
   import sys.dispatcher
 
-  val completion = diffSource(repo, from, to)
-    .via(ActsonReader.instance)
-    .via(ProtocolReader.of(GithubProtocol.compareProto))
-    .runForeach(println)
+  val completion =
+    DiffSource(repo, from, to)
+      .via(ActsonReader.instance)
+      .via(ProtocolReader.of(GithubProtocol.compareProto))
+      .via(StatsAggregator())
+      .via(SortingMachine())
+      .via(MarkdownConverter())
+      .runForeach(println)
+      .recover {
+        case t => sys.log.error("Error while gathering authors data: {}", t.getLocalizedMessage)
+      }
+      .onComplete(_ => sys.terminate())
 
-  scala.io.StdIn.readLine()
+  def gitRepo(path: String): FileRepository =
+    FileRepositoryBuilder
+      .create(new File(path + "/.git"))
+      .asInstanceOf[FileRepository]
 
-  sys.terminate()
+  def shaToStats(sha: String)(implicit repo: FileRepository): Stats = {
+    implicit val (revWalk, reader) = repo.singleThreadedReaderTuple
+    val df                         = new DiffFormatter(DisabledOutputStream.INSTANCE)
+    df.setRepository(repo)
+    diff(abbrId(sha).asRevTree, abbrId(sha).asRevCommit.getParent(0).asRevTree)
+      .flatMap { d =>
+        df.toFileHeader(d).toEditList.toList.map { edit =>
+          Stats(
+            additions = edit.getEndA - edit.getBeginA,
+            deletions = edit.getEndB - edit.getBeginB,
+            1
+          )
+        }
+      }
+      .reduce((sum, stats) =>
+        Stats(sum.additions + stats.additions, sum.deletions + stats.deletions, sum.commits + stats.commits))
+  }
+}
 
-  def diffSource(repo: String, from: String, to: String): Source[ByteString, NotUsed] =
+object DiffSource {
+  def apply(repo: String, from: String, to: String)(implicit ec: ExecutionContext,
+                                                    sys: ActorSystem,
+                                                    mat: Materializer): Source[ByteString, NotUsed] =
     Source
       .fromFuture(
         Marshal(Uri(s"https://api.github.com/repos/$repo/compare/$from...$to"))
@@ -56,19 +99,46 @@ object Authors extends App {
           .flatMap(Http().singleRequest(_))
           .map(_.entity.dataBytes)
       )
-      .flatMapConcat(identity)
+      .flatMapConcat(identity _)
+}
 
-  def shaToStats(sha: String)(implicit repo: FileRepository): (Int, Int) = {
-    implicit val (revWalk, reader) = repo.singleThreadedReaderTuple
-    val df                         = new DiffFormatter(DisabledOutputStream.INSTANCE)
-    df.setRepository(repo)
-    diff(abbrId(sha).asRevTree, abbrId(sha).asRevCommit.getParent(0).asRevTree)
-      .flatMap { d =>
-        df.toFileHeader(d).toEditList.toList.map { edit =>
-          (edit.getEndA - edit.getBeginA, edit.getEndB - edit.getBeginB)
+object SortingMachine {
+  def apply(): Flow[AuthorStats, AuthorStats, NotUsed] =
+    Flow[AuthorStats]
+      .grouped(MaxAuthors)
+      .mapConcat(_.sortBy(-_.stats.commits))
+}
+
+object StatsAggregator {
+  def apply()(implicit repo: FileRepository): Flow[Commit, AuthorStats, NotUsed] =
+    Flow[Commit]
+      .groupBy(MaxAuthors, _.gitAuthor.email)
+      .map(commit => AuthorStats(commit.gitAuthor, commit.githubAuthor, Authors.shaToStats(commit.sha)))
+      .reduce(
+        (aggr, elem) =>
+          aggr.copy(
+            stats = Stats(additions = aggr.stats.additions + elem.stats.additions,
+                          deletions = aggr.stats.deletions + elem.stats.deletions,
+                          aggr.stats.commits + elem.stats.commits)))
+      .mergeSubstreams
+}
+
+object MarkdownConverter {
+  def apply(): Flow[AuthorStats, String, NotUsed] =
+    Flow[AuthorStats]
+      .map { author =>
+        val authorId = author.githubAuthor.map { gh =>
+          // using html instead of markdown, because default
+          // avatars come from github not resized
+          s"""[<img width="20" alt="${gh.login}" src="${gh.avatar}&s=40"> **${gh.login}**](${gh.url})"""
+        } getOrElse {
+          author.gitAuthor.name
         }
-      }
-      .fold((0, 0))((sum, stats) => (sum._1 + stats._1, sum._2 + stats._2))
-  }
 
+        s"| $authorId | ${author.stats.commits} | ${author.stats.additions} | ${author.stats.deletions} |"
+      }
+      .prepend(Source(List(
+        "| Author | Commits | Lines added | Lines removed |",
+        "| ------ | ------- | ----------- | ------------- |"
+      )))
 }

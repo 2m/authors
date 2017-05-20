@@ -5,30 +5,24 @@ import com.tradeshift.reaktive.marshal.Protocol._
 import lt.dvim.scala.compat.javaslang.FunctionConverters._
 import lt.dvim.scala.compat.javaslang.OptionConverters._
 
-import javaslang.control.{Option => JsOption}
+import javaslang.control.{Option => VavrOption}
 
 object GithubProtocol {
-  final case class CommitUrl(url: String)
-
-  final case class GithubAuthor(login: String, url: String)
+  final case class GithubAuthor(login: String, url: String, avatar: String)
   final case class GitAuthor(name: String, email: String)
-  final case class Stats(additions: Int, deletions: Int)
-  final case class Commit(githubAuthor: Option[GithubAuthor], gitAuthor: GitAuthor, stats: Stats)
+  final case class Stats(additions: Int, deletions: Int, commits: Int)
+  final case class Commit(sha: String, gitAuthor: GitAuthor, githubAuthor: Option[GithubAuthor])
+  final case class AuthorStats(gitAuthor: GitAuthor, githubAuthor: Option[GithubAuthor], stats: Stats)
 
   val compareProto =
     `object`(
       field(
         "commits",
-        array(
-          `object`(
-            field("url", stringValue),
-            CommitUrl
-          )
-        )
+        array(commitProto)
       )
     )
 
-  val commitProto =
+  lazy val commitProto =
     `object`(
       option(
         field("author", githubAuthorProto)
@@ -37,9 +31,9 @@ object GithubProtocol {
             `object`(
               field("author", gitAuthorProto)
             )),
-      field("stats", statsProto),
-      (githubAuthor: JsOption[GithubAuthor], gitAuthor: GitAuthor, stats: Stats) =>
-        Commit(githubAuthor, gitAuthor, stats)
+      field("sha", stringValue),
+      (githubAuthor: VavrOption[GithubAuthor], gitAuthor: GitAuthor, sha: String) =>
+        Commit(sha, gitAuthor, githubAuthor)
     )
 
   lazy val gitAuthorProto =
@@ -53,13 +47,7 @@ object GithubProtocol {
     `object`(
       field("login", stringValue),
       field("html_url", stringValue),
+      field("avatar_url", stringValue),
       GithubAuthor
-    )
-
-  lazy val statsProto =
-    `object`(
-      field("additions", integerValue),
-      field("deletions", integerValue),
-      (a: Integer, d: Integer) => Stats(a.intValue, d.intValue)
     )
 }
