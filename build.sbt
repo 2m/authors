@@ -15,6 +15,7 @@ lazy val core = project
       "com.typesafe.akka"    %% "akka-testkit"            % "2.4.17" % Test
     )
   )
+  .enablePlugins(ScalafmtPlugin)
 
 inThisBuild(
   organization := "lt.dvim.authors"

@@ -60,13 +60,15 @@ object Authors extends App {
 
   def shaToStats(sha: String)(implicit repo: FileRepository): (Int, Int) = {
     implicit val (revWalk, reader) = repo.singleThreadedReaderTuple
-    val df = new DiffFormatter(DisabledOutputStream.INSTANCE)
+    val df                         = new DiffFormatter(DisabledOutputStream.INSTANCE)
     df.setRepository(repo)
-    diff(abbrId(sha).asRevTree, abbrId(sha).asRevCommit.getParent(0).asRevTree).flatMap { d =>
-      df.toFileHeader(d).toEditList.toList.map { edit =>
-        (edit.getEndA - edit.getBeginA, edit.getEndB - edit.getBeginB)
+    diff(abbrId(sha).asRevTree, abbrId(sha).asRevCommit.getParent(0).asRevTree)
+      .flatMap { d =>
+        df.toFileHeader(d).toEditList.toList.map { edit =>
+          (edit.getEndA - edit.getBeginA, edit.getEndB - edit.getBeginB)
+        }
       }
-    }.fold((0, 0))((sum, stats) => (sum._1 + stats._1, sum._2 + stats._2))
+      .fold((0, 0))((sum, stats) => (sum._1 + stats._1, sum._2 + stats._2))
   }
 
 }

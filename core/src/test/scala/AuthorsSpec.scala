@@ -74,10 +74,12 @@ class AuthorsSpec
     }
 
     "get commit stats from sha" in {
-      val repo = FileRepositoryBuilder.create(new File(".git/modules/core/src/test/resources/authors-test-repo")).asInstanceOf[FileRepository]
+      val repo = FileRepositoryBuilder
+        .create(new File(".git/modules/core/src/test/resources/authors-test-repo"))
+        .asInstanceOf[FileRepository]
       implicit val (revWalk, reader) = repo.singleThreadedReaderTuple
-      val tree = abbrId("282d517").asRevCommit
-      val df = new DiffFormatter(DisabledOutputStream.INSTANCE)
+      val tree                       = abbrId("282d517").asRevCommit
+      val df                         = new DiffFormatter(DisabledOutputStream.INSTANCE)
       df.setRepository(repo)
       println(tree)
       diff(abbrId("282d517").asRevTree, abbrId("282d517").asRevCommit.getParent(0).asRevTree).foreach { d =>
