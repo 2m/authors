@@ -1,3 +1,3 @@
-addSbtPlugin("com.dwijnand" % "sbt-dynver"   % "1.1.1")
-addSbtPlugin("com.dwijnand" % "sbt-travisci" % "1.0.0-M4")
-addSbtPlugin("com.lucidchart" % "sbt-scalafmt" % "0.3")
+addSbtPlugin("com.dwijnand" % "sbt-dynver"   % "2.0.0")
+addSbtPlugin("com.dwijnand" % "sbt-travisci" % "1.1.1")
+addSbtPlugin("com.lucidchart" % "sbt-scalafmt-coursier" % "1.12")

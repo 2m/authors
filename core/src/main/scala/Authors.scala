@@ -43,8 +43,8 @@ object Authors extends App {
       |akka.loglevel = ERROR
     """.stripMargin)
 
-  implicit val sys           = ActorSystem("Authors", config.withFallback(ConfigFactory.load))
-  implicit val mat           = ActorMaterializer()
+  implicit val sys = ActorSystem("Authors", config.withFallback(ConfigFactory.load))
+  implicit val mat = ActorMaterializer()
   implicit val gitRepository = Authors.gitRepo(path)
 
   println(gitRepository.getDirectory)
@@ -71,7 +71,7 @@ object Authors extends App {
 
   def shaToStats(sha: String)(implicit repo: FileRepository): Stats = {
     implicit val (revWalk, reader) = repo.singleThreadedReaderTuple
-    val df                         = new DiffFormatter(DisabledOutputStream.INSTANCE)
+    val df = new DiffFormatter(DisabledOutputStream.INSTANCE)
     df.setRepository(repo)
     diff(abbrId(sha).asRevTree, abbrId(sha).asRevCommit.getParent(0).asRevTree)
       .flatMap { d =>
@@ -83,8 +83,7 @@ object Authors extends App {
           )
         }
       }
-      .reduce((sum, stats) =>
-        Stats(sum.additions + stats.additions, sum.deletions + stats.deletions, 1))
+      .reduce((sum, stats) => Stats(sum.additions + stats.additions, sum.deletions + stats.deletions, 1))
   }
 }
 
@@ -120,7 +119,9 @@ object StatsAggregator {
           aggr.copy(
             stats = Stats(additions = aggr.stats.additions + elem.stats.additions,
                           deletions = aggr.stats.deletions + elem.stats.deletions,
-                          aggr.stats.commits + elem.stats.commits)))
+                          aggr.stats.commits + elem.stats.commits)
+        )
+      )
       .mergeSubstreams
 }
 
@@ -138,8 +139,12 @@ object MarkdownConverter {
 
         s"| $authorId | ${author.stats.commits} | ${author.stats.additions} | ${author.stats.deletions} |"
       }
-      .prepend(Source(List(
-        "| Author | Commits | Lines added | Lines removed |",
-        "| ------ | ------- | ----------- | ------------- |"
-      )))
+      .prepend(
+        Source(
+          List(
+            "| Author | Commits | Lines added | Lines removed |",
+            "| ------ | ------- | ----------- | ------------- |"
+          )
+        )
+      )
 }

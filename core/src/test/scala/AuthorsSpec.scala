@@ -31,7 +31,7 @@ class AuthorsSpec
     with Inside
     with ScalaFutures {
 
-  implicit val mat             = ActorMaterializer()
+  implicit val mat = ActorMaterializer()
   implicit val defaultPatience = PatienceConfig(timeout = 5.seconds, interval = 30.millis)
 
   "authors" should {
@@ -54,14 +54,16 @@ class AuthorsSpec
       implicit val repo = Authors.gitRepo(".git/modules/core/src/test/resources/authors-test-repo")
       val stats = Source(
         List(
-          Commit("f576a45", "message",
+          Commit("f576a45",
+                 "message",
                  GitAuthor("test", "test@test.lt"),
                  Some(GithubAuthor("test", "http://users/test", "http://avatars/test"))),
-          Commit("bce0e63", "message",
+          Commit("bce0e63",
+                 "message",
                  GitAuthor("test", "test@test.lt"),
                  Some(GithubAuthor("test", "http://users/test", "http://avatars/test")))
-        ))
-        .via(StatsAggregator())
+        )
+      ).via(StatsAggregator())
         .runWith(Sink.head)
 
       whenReady(stats) {
@@ -75,14 +77,16 @@ class AuthorsSpec
       implicit val repo = Authors.gitRepo(".git/modules/core/src/test/resources/authors-test-repo")
       val stats = Source(
         List(
-          Commit("f576a45", "message",
-            GitAuthor("test", "test1@test.lt"),
-            Some(GithubAuthor("test", "http://users/test", "http://avatars/test"))),
-          Commit("bce0e63", "message",
-            GitAuthor("test", "test2@test.lt"),
-            Some(GithubAuthor("test", "http://users/test", "http://avatars/test")))
-        ))
-        .via(StatsAggregator())
+          Commit("f576a45",
+                 "message",
+                 GitAuthor("test", "test1@test.lt"),
+                 Some(GithubAuthor("test", "http://users/test", "http://avatars/test"))),
+          Commit("bce0e63",
+                 "message",
+                 GitAuthor("test", "test2@test.lt"),
+                 Some(GithubAuthor("test", "http://users/test", "http://avatars/test")))
+        )
+      ).via(StatsAggregator())
         .runWith(Sink.head)
 
       whenReady(stats) {

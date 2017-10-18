@@ -5,7 +5,7 @@ import com.tradeshift.reaktive.marshal.Protocol._
 import lt.dvim.scala.compat.javaslang.FunctionConverters._
 import lt.dvim.scala.compat.javaslang.OptionConverters._
 
-import javaslang.control.{Option => VavrOption}
+import io.vavr.control.{Option => VavrOption}
 
 object GithubProtocol {
   final case class GithubAuthor(login: String, url: String, avatar: String)
@@ -31,8 +31,7 @@ object GithubProtocol {
             `object`(
               field("author", gitAuthorProto),
               field("message", stringValue),
-              (gitAuthor: GitAuthor, message: String) =>
-                (gitAuthor, message)
+              (gitAuthor: GitAuthor, message: String) => (gitAuthor, message)
             )),
       field("sha", stringValue),
       (githubAuthor: VavrOption[GithubAuthor], gitAuthorAndMessage: (GitAuthor, String), sha: String) =>
