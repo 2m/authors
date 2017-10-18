@@ -17,52 +17,57 @@ import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.internal.storage.file.FileRepository
 import org.eclipse.jgit.util.io.DisabledOutputStream
 import com.madgag.git._
-import lt.dvim.authors.Authors.MaxAuthors
 import lt.dvim.authors.GithubProtocol.{AuthorStats, Commit, Stats}
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 
 import scala.collection.JavaConversions._
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.duration._
 
-object Authors extends App {
-
+object Authors {
   final val MaxAuthors = 1024
 
-  val (repo, from, to, path) = args.toList match {
-    case repo :: from :: to :: path :: Nil => (repo, from, to, path)
-    case _ =>
-      println("""
-        |Usage:
-        |  <repo> <from> <to> <path>
-      """.stripMargin)
-      System.exit(1)
-      ???
+  def main(args: Array[String]) = {
+    val (repo, from, to, path) = args.toList match {
+      case repo :: from :: to :: path :: Nil => (repo, from, to, path)
+      case _ =>
+        println("""
+            |Usage:
+            |  <repo> <from> <to> <path>
+          """.stripMargin)
+        System.exit(1)
+        ???
+    }
+
+    val future = summary(repo, from, to, path)
+    println(Await.result(future, 30.seconds))
   }
 
-  val config = ConfigFactory.parseString("""
-      |akka.loglevel = ERROR
-    """.stripMargin)
+  def summary(repo: String, from: String, to: String, path: String): Future[String] = {
+    val config = ConfigFactory.parseString("""
+        |akka.loglevel = ERROR
+      """.stripMargin)
 
-  implicit val sys = ActorSystem("Authors", config.withFallback(ConfigFactory.load))
-  implicit val mat = ActorMaterializer()
-  implicit val gitRepository = Authors.gitRepo(path)
+    val cld = classOf[ActorSystem].getClassLoader
+    implicit val sys =
+      ActorSystem("Authors", config.withFallback(ConfigFactory.load(cld)), cld)
+    implicit val mat = ActorMaterializer()
+    implicit val gitRepository = Authors.gitRepo(path)
 
-  println(gitRepository.getDirectory)
+    import sys.dispatcher
 
-  import sys.dispatcher
+    val completion =
+      DiffSource(repo, from, to)
+        .via(ActsonReader.instance)
+        .via(ProtocolReader.of(GithubProtocol.compareProto))
+        .via(StatsAggregator())
+        .via(SortingMachine())
+        .via(MarkdownConverter())
+        .runFold("")(_ ++ "\n" ++ _)
 
-  val completion =
-    DiffSource(repo, from, to)
-      .via(ActsonReader.instance)
-      .via(ProtocolReader.of(GithubProtocol.compareProto))
-      .via(StatsAggregator())
-      .via(SortingMachine())
-      .via(MarkdownConverter())
-      .runForeach(println)
-      .recover {
-        case t => sys.log.error("Error while gathering authors data: {}", t.getLocalizedMessage)
-      }
-      .onComplete(_ => sys.terminate())
+    completion.onComplete(_ => sys.terminate())
+    completion
+  }
 
   def gitRepo(path: String): FileRepository =
     FileRepositoryBuilder
@@ -104,7 +109,7 @@ object DiffSource {
 object SortingMachine {
   def apply(): Flow[AuthorStats, AuthorStats, NotUsed] =
     Flow[AuthorStats]
-      .grouped(MaxAuthors)
+      .grouped(Authors.MaxAuthors)
       .mapConcat(_.sortBy(s => (s.stats.commits, s.stats.additions, s.stats.deletions)).reverse)
 }
 
@@ -112,7 +117,7 @@ object StatsAggregator {
   def apply()(implicit repo: FileRepository): Flow[Commit, AuthorStats, NotUsed] =
     Flow[Commit]
       .filterNot(_.message.startsWith("Merge pull request"))
-      .groupBy(MaxAuthors, commit => commit.githubAuthor.map(_.login).getOrElse(commit.gitAuthor.email))
+      .groupBy(Authors.MaxAuthors, commit => commit.githubAuthor.map(_.login).getOrElse(commit.gitAuthor.email))
       .map(commit => AuthorStats(commit.gitAuthor, commit.githubAuthor, Authors.shaToStats(commit.sha)))
       .reduce(
         (aggr, elem) =>

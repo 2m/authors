@@ -1,6 +1,6 @@
 lazy val authors = project
   .in(file("."))
-  .aggregate(core)
+  .aggregate(core, plugin)
 
 lazy val core = project
   .settings(
@@ -11,6 +11,7 @@ lazy val core = project
       val Akka = "2.5.6"
       val AkkaHttp = "10.0.10"
       libraryDependencies ++= Seq(
+        "com.typesafe.akka"    %% "akka-actor"               % Akka,
         "com.typesafe.akka"    %% "akka-stream"              % Akka,
         "com.typesafe.akka"    %% "akka-http"                % AkkaHttp,
         "com.tradeshift"       %% "ts-reaktive-marshal-akka" % "0.0.30",
@@ -19,6 +20,22 @@ lazy val core = project
         "com.typesafe.akka"    %% "akka-testkit"             % Akka % Test
       )
     }
+  )
+
+lazy val plugin = project
+  .dependsOn(core)
+  .settings(
+    name := "sbt-authors",
+    sbtPlugin := true,
+    scriptedLaunchOpts += ("-Dproject.version=" + version.value),
+    scriptedLaunchOpts ++= sys.process.javaVmArguments.filter(
+      a => Seq("-Xmx", "-Xms", "-XX", "-Dfile").exists(a.startsWith)
+    ),
+    scriptedDependencies := {
+      val p1 = (publishLocal in core).value
+      val p2 = publishLocal.value
+    },
+    scriptedBufferLog := false
   )
 
 inThisBuild(
