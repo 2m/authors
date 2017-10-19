@@ -56,17 +56,20 @@ object Authors {
 
     import sys.dispatcher
 
-    val completion =
-      DiffSource(repo, from, to)
-        .via(ActsonReader.instance)
-        .via(ProtocolReader.of(GithubProtocol.compareProto))
-        .via(StatsAggregator())
-        .via(SortingMachine())
-        .via(MarkdownConverter())
-        .runFold("")(_ ++ "\n" ++ _)
-
-    completion.onComplete(_ => sys.terminate())
-    completion
+    DiffSource(repo, from, to)
+      .via(ActsonReader.instance)
+      .via(ProtocolReader.of(GithubProtocol.compareProto))
+      .via(StatsAggregator())
+      .via(SortingMachine())
+      .via(MarkdownConverter())
+      .runFold("")(_ ++ "\n" ++ _)
+      .transformWith { res =>
+        for {
+          _ <- Http().shutdownAllConnectionPools()
+          _ <- sys.terminate()
+          r <- Future.fromTry(res)
+        } yield r
+      }
   }
 
   def gitRepo(path: String): FileRepository =
