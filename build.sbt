@@ -41,6 +41,7 @@ inThisBuild(
   Seq(
     organization := "lt.dvim.authors",
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
+    homepage := Some(url("https://github.com/2m/authors")),
     scmInfo := Some(ScmInfo(url("https://github.com/2m/authors"), "git@github.com:2m/authors.git")),
     developers += Developer("contributors",
                             "Contributors",
