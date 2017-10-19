@@ -29,22 +29,19 @@ object AuthorsPlugin extends AutoPlugin {
         sys.error("Please set the scmInfo setting.")
       }
 
-      //println("#####")
-      //println("testo")
-
-      streams.value.log.info(s"Generating authors summary for $repo between $from and $to")
+      streams.value.log.info(s"Fetching authors summary for $repo between $from and $to")
 
       import scala.concurrent.ExecutionContext.Implicits.global
       val summary = Authors.summary(repo, from, to, baseDirectory.value.getAbsolutePath)
-      summary.foreach { s =>
-        import java.awt.Toolkit
-        import java.awt.datatransfer._
-        val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
-        val selection = new StringSelection(s)
-        clipboard.setContents(selection, selection)
+        .map { s =>
+          import java.awt.Toolkit
+          import java.awt.datatransfer._
+          val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
+          val selection = new StringSelection(s)
+          clipboard.setContents(selection, selection)
 
-        streams.value.log.info("Authors summary placed into the clipboard.")
-      }
+          streams.value.log.info("Authors summary placed into the clipboard.")
+        }
 
       Await.result(summary, 30.seconds)
     },
