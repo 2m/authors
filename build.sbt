@@ -41,6 +41,8 @@ lazy val plugin = project
 inThisBuild(
   Seq(
     organization := "lt.dvim.authors",
+    bintrayOrganization := Some("2m"),
+    licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
     scalafmtOnCompile := true
   )
 )
