@@ -6,6 +6,12 @@ scala:
 jdk:
   - oraclejdk8
 
+git:
+  submodules: false
+
+before_install:
+  - git submodule update --init --remote --recursive
+
 script: sbt test scripted
 
 before_cache:
