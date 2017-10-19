@@ -6,7 +6,6 @@ lazy val core = project
   .settings(
     name := "authors-core",
     resolvers += Resolver.bintrayRepo("jypma", "maven"),
-    resolvers += Resolver.bintrayRepo("readytalk", "maven"), // to resolve deps of ts-reaktive
     {
       val Akka = "2.5.6"
       val AkkaHttp = "10.0.10"
@@ -41,8 +40,13 @@ lazy val plugin = project
 inThisBuild(
   Seq(
     organization := "lt.dvim.authors",
-    bintrayOrganization := Some("2m"),
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
+    scmInfo := Some(ScmInfo(url("https://github.com/2m/authors"), "git@github.com:2m/authors.git")),
+    developers += Developer("contributors",
+                            "Contributors",
+                            "https://gitter.im/2m/authors",
+                            url("https://github.com/2m/authors/graphs/contributors")),
+    bintrayOrganization := Some("2m"),
     scalafmtOnCompile := true
   )
 )
