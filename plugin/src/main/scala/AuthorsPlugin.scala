@@ -32,7 +32,8 @@ object AuthorsPlugin extends AutoPlugin {
       streams.value.log.info(s"Fetching authors summary for $repo between $from and $to")
 
       import scala.concurrent.ExecutionContext.Implicits.global
-      val summary = Authors.summary(repo, from, to, baseDirectory.value.getAbsolutePath)
+      val summary = Authors
+        .summary(repo, from, to, baseDirectory.value.getAbsolutePath)
         .map { s =>
           import java.awt.Toolkit
           import java.awt.datatransfer._

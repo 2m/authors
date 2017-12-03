@@ -5,10 +5,9 @@ lazy val authors = project
 lazy val core = project
   .settings(
     name := "authors-core",
-    resolvers += Resolver.bintrayRepo("jypma", "maven"),
-    {
-      val Akka = "2.5.6"
-      val AkkaHttp = "10.0.10"
+    resolvers += Resolver.bintrayRepo("jypma", "maven"), {
+      val Akka = "2.5.7"
+      val AkkaHttp = "10.0.11"
       libraryDependencies ++= Seq(
         "com.typesafe.akka"    %% "akka-actor"               % Akka,
         "com.typesafe.akka"    %% "akka-stream"              % Akka,
