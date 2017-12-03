@@ -17,12 +17,13 @@ Inspired by:
 Add this to your sbt build plugins, in either `project/plugins.sbt` or `~/.sbt/1.0/plugins/build.sbt`:
 
     addSbtPlugin("lt.dvim.authors" % "sbt-authors" % "<latest version>")
+    resolvers += Resolver.bintrayRepo("jypma", "maven") // for ts-reaktive
 
 `sbt-authors` is an AutoPlugin and therefore that is all that is required.
 
 ## Tasks
 
-* `authors <from> <to>`: Fetches the authors summary between two tags and puts it to your clipboard.
+* `authors <from> <to>` Fetches the authors summary between two tags and puts it to your clipboard.
 
 ## Licence
 

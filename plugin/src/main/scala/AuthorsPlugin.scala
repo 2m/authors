@@ -21,7 +21,7 @@ object AuthorsPlugin extends AutoPlugin {
       val (from, to) = spaceDelimited("<from> <to>").parsed match {
         case Seq(from, to) => (from, to)
         case _ =>
-          sys.error("Argument tags missing: <from> <to>")
+          sys.error("Please specify the <from> and <to> tags as the arguments to the task.")
       }
 
       // get the org/repo name from the scm info
