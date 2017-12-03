@@ -26,6 +26,7 @@ import scala.concurrent.duration._
 
 object Authors {
   final val MaxAuthors = 1024
+  final val GithubApiUrl = "api.github.com"
 
   def main(args: Array[String]) = {
     val (repo, from, to, path) = args.toList match {
@@ -65,7 +66,6 @@ object Authors {
       .runFold("")(_ ++ "\n" ++ _)
       .transformWith { res =>
         for {
-          _ <- Http().shutdownAllConnectionPools()
           _ <- sys.terminate()
           r <- Future.fromTry(res)
         } yield r
@@ -101,12 +101,12 @@ object DiffSource {
                                                     mat: Materializer): Source[ByteString, NotUsed] =
     Source
       .fromFuture(
-        Marshal(Uri(s"https://api.github.com/repos/$repo/compare/$from...$to"))
+        Marshal(Uri(s"/repos/$repo/compare/$from...$to"))
           .to[HttpRequest]
-          .flatMap(Http().singleRequest(_))
-          .map(_.entity.dataBytes)
       )
-      .flatMapConcat(identity _)
+      .via(Http().outgoingConnectionHttps(Authors.GithubApiUrl))
+      .map(_.entity.dataBytes)
+      .flatMapConcat(identity)
 }
 
 object SortingMachine {
