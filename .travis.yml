@@ -6,11 +6,11 @@ scala:
 jdk:
   - oraclejdk8
 
-git:
-  submodules: false
-
-before_install:
-  - git submodule update --init --remote --recursive
+before_script:
+  # start X for the clipboard access in tests
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
 
 script: sbt test scripted
 
