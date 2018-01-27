@@ -6,15 +6,15 @@ lazy val core = project
   .settings(
     name := "authors-core",
     resolvers += Resolver.bintrayRepo("jypma", "maven"), {
-      val Akka = "2.5.8"
+      val Akka = "2.5.9"
       val AkkaHttp = "10.0.11"
       libraryDependencies ++= Seq(
         "com.typesafe.akka"    %% "akka-actor"               % Akka,
         "com.typesafe.akka"    %% "akka-stream"              % Akka,
         "com.typesafe.akka"    %% "akka-http"                % AkkaHttp,
-        "com.tradeshift"       %% "ts-reaktive-marshal-akka" % "0.0.30",
+        "com.tradeshift"       %% "ts-reaktive-marshal-akka" % "0.0.33",
         "com.madgag.scala-git" %% "scala-git"                % "4.0",
-        "org.scalatest"        %% "scalatest"                % "3.0.1" % Test,
+        "org.scalatest"        %% "scalatest"                % "3.0.4" % Test,
         "com.typesafe.akka"    %% "akka-testkit"             % Akka % Test
       )
     }
