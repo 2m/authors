@@ -1,10 +1,12 @@
-# [sbt-authors][] [![travis-badge][]][travis] [![gitter-badge][]][gitter]
+# [sbt-authors][] [![scaladex-badge][]][scaladex] [![travis-badge][]][travis] [![gitter-badge][]][gitter]
 
 [sbt-authors]:        https://github.com/2m/authors
-[travis]:          https://travis-ci.org/2m/authors
-[travis-badge]:    https://travis-ci.org/2m/authors.svg?branch=master
-[gitter]:              https://gitter.im/2m/authors
-[gitter-badge]: https://badges.gitter.im/2m/authors.svg
+[scaladex]:           https://index.scala-lang.org/2m/authors
+[scaladex-badge]:     https://index.scala-lang.org/2m/authors/latest.svg
+[travis]:             https://travis-ci.org/2m/authors
+[travis-badge]:       https://travis-ci.org/2m/authors.svg?branch=master
+[gitter]:             https://gitter.im/2m/authors
+[gitter-badge]:       https://badges.gitter.im/2m/authors.svg
 
 `sbt-authors` is an [sbt](https://www.scala-sbt.org) plugin that produces a nicely formatted summary of authors that contributed to a project between two points in git history.
 
