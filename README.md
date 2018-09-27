@@ -29,6 +29,16 @@ resolvers += Resolver.bintrayRepo("jypma", "maven") // for ts-reaktive
 
 * `authors <from> <to>` Fetches the authors summary between two tags and puts it to your clipboard.
 
+## Example usage
+
+* `sbt "authors v0.20 v0.21"`
+
+  Fetches the authors summarty between `v0.20` and `v0.21` tags and puts it to your clipboard
+  
+* `sbt "authors v0.20 HEAD"`
+
+  Fetches the authors summarty between `v0.20` tag and the last commit and puts it to your clipboard
+
 ## Licence
 
 Copyright 2016-2017 Martynas Mickevičius
