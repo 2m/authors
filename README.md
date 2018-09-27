@@ -38,6 +38,10 @@ resolvers += Resolver.bintrayRepo("jypma", "maven") // for ts-reaktive
 * `sbt "authors v0.20 HEAD"`
 
   Fetches the authors summarty between `v0.20` tag and the last commit and puts it to your clipboard
+  
+* `coursier launch -r bintray:jypma/maven lt.dvim.authors::authors-core:1.0.0 -- akka/alpakka v0.19 v0.20 ./`
+
+  This will use [`coursier`](https://github.com/coursier/coursier) to launch the tool directly. You will have to be in the checkedout project directory when runnig this command. It will print out the authors summary to stdout. 
 
 ## Licence
 
