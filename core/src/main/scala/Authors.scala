@@ -8,7 +8,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.marshalling.PredefinedToRequestMarshallers._
 import akka.http.scaladsl.model.{HttpRequest, Uri}
-import akka.stream.{ActorMaterializer, Materializer}
+import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
 import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
@@ -20,7 +20,7 @@ import com.madgag.git._
 import lt.dvim.authors.GithubProtocol.{AuthorStats, Commit, Stats}
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
 
@@ -83,7 +83,7 @@ object Authors {
     df.setRepository(repo)
     diff(abbrId(sha).asRevTree, abbrId(sha).asRevCommit.getParent(0).asRevTree)
       .flatMap { d =>
-        df.toFileHeader(d).toEditList.toList.map { edit =>
+        df.toFileHeader(d).toEditList.asScala.map { edit =>
           Stats(
             additions = edit.getEndA - edit.getBeginA,
             deletions = edit.getEndB - edit.getBeginB,
@@ -97,8 +97,7 @@ object Authors {
 
 object DiffSource {
   def apply(repo: String, from: String, to: String)(implicit ec: ExecutionContext,
-                                                    sys: ActorSystem,
-                                                    mat: Materializer): Source[ByteString, NotUsed] =
+                                                    sys: ActorSystem): Source[ByteString, NotUsed] =
     Source
       .fromFuture(
         Marshal(Uri(s"/repos/$repo/compare/$from...$to"))

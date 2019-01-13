@@ -2,9 +2,7 @@ package lt.dvim.authors
 
 import com.tradeshift.reaktive.json.JSONProtocol._
 import com.tradeshift.reaktive.marshal.Protocol._
-import lt.dvim.scala.compat.javaslang.FunctionConverters._
-import lt.dvim.scala.compat.javaslang.OptionConverters._
-
+import lt.dvim.scala.compat.vavr.OptionConverters._
 import io.vavr.control.{Option => VavrOption}
 
 object GithubProtocol {
@@ -42,7 +40,7 @@ object GithubProtocol {
     `object`(
       field("name", stringValue),
       field("email", stringValue),
-      GitAuthor
+      GitAuthor.apply(_, _)
     )
 
   lazy val githubAuthorProto =
@@ -50,6 +48,6 @@ object GithubProtocol {
       field("login", stringValue),
       field("html_url", stringValue),
       field("avatar_url", stringValue),
-      GithubAuthor
+      GithubAuthor.apply(_, _, _)
     )
 }

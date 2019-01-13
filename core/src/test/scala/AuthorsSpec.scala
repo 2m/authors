@@ -1,6 +1,5 @@
 package lt.dvim.authors
 
-import java.io.File
 import java.nio.file.Paths
 
 import akka.actor.ActorSystem
@@ -10,8 +9,6 @@ import akka.testkit.TestKit
 import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
 import com.typesafe.config.ConfigFactory
 import lt.dvim.authors.GithubProtocol._
-import org.eclipse.jgit.internal.storage.file.FileRepository
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, Inside, Matchers, WordSpecLike}
 
