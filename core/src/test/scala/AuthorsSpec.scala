@@ -3,6 +3,7 @@ package lt.dvim.authors
 import java.nio.file.Paths
 
 import akka.actor.ActorSystem
+import akka.event.Logging
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{FileIO, Sink, Source}
 import akka.testkit.TestKit
@@ -29,6 +30,7 @@ class AuthorsSpec
     with ScalaFutures {
 
   implicit val mat = ActorMaterializer()
+  implicit val log = Logging(system, this.getClass)
   implicit val defaultPatience = PatienceConfig(timeout = 5.seconds, interval = 30.millis)
 
   "authors" should {
