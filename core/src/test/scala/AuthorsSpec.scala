@@ -1,17 +1,15 @@
 package lt.dvim.authors
 
-import java.io.File
 import java.nio.file.Paths
 
 import akka.actor.ActorSystem
+import akka.event.Logging
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{FileIO, Sink, Source}
 import akka.testkit.TestKit
 import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
 import com.typesafe.config.ConfigFactory
 import lt.dvim.authors.GithubProtocol._
-import org.eclipse.jgit.internal.storage.file.FileRepository
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, Inside, Matchers, WordSpecLike}
 
@@ -32,6 +30,7 @@ class AuthorsSpec
     with ScalaFutures {
 
   implicit val mat = ActorMaterializer()
+  implicit val log = Logging(system, this.getClass)
   implicit val defaultPatience = PatienceConfig(timeout = 5.seconds, interval = 30.millis)
 
   "authors" should {
@@ -92,6 +91,25 @@ class AuthorsSpec
       whenReady(stats) {
         _ should matchPattern {
           case AuthorStats(_, _, Stats(9, 0, 2)) =>
+        }
+      }
+    }
+
+    "get stats when added file is binary" in {
+      implicit val repo = Authors.gitRepo(".git/modules/core/src/test/resources/authors-test-repo")
+      val stats = Source(
+        List(
+          Commit("901392a",
+                 "message",
+                 GitAuthor("test", "test1@test.lt"),
+                 Some(GithubAuthor("test", "http://users/test", "http://avatars/test")))
+        )
+      ).via(StatsAggregator())
+        .runWith(Sink.head)
+
+      whenReady(stats) {
+        _ should matchPattern {
+          case AuthorStats(_, _, Stats(0, 0, 1)) =>
         }
       }
     }

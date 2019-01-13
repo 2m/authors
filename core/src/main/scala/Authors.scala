@@ -4,15 +4,15 @@ import java.io.File
 
 import akka.NotUsed
 import akka.actor.ActorSystem
+import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.marshalling.PredefinedToRequestMarshallers._
 import akka.http.scaladsl.model.{HttpRequest, Uri}
-import akka.stream.{ActorMaterializer, Materializer}
+import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
 import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
-import com.typesafe.config.ConfigFactory
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.internal.storage.file.FileRepository
 import org.eclipse.jgit.util.io.DisabledOutputStream
@@ -20,7 +20,7 @@ import com.madgag.git._
 import lt.dvim.authors.GithubProtocol.{AuthorStats, Commit, Stats}
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
 
@@ -45,15 +45,11 @@ object Authors {
   }
 
   def summary(repo: String, from: String, to: String, path: String): Future[String] = {
-    val config = ConfigFactory.parseString("""
-        |akka.loglevel = ERROR
-      """.stripMargin)
-
     val cld = classOf[ActorSystem].getClassLoader
-    implicit val sys =
-      ActorSystem("Authors", config.withFallback(ConfigFactory.load(cld)), cld)
+    implicit val sys = ActorSystem("Authors", classLoader = Some(cld))
     implicit val mat = ActorMaterializer()
     implicit val gitRepository = Authors.gitRepo(path)
+    implicit val log = Logging(sys, this.getClass)
 
     import sys.dispatcher
 
@@ -83,7 +79,7 @@ object Authors {
     df.setRepository(repo)
     diff(abbrId(sha).asRevTree, abbrId(sha).asRevCommit.getParent(0).asRevTree)
       .flatMap { d =>
-        df.toFileHeader(d).toEditList.toList.map { edit =>
+        df.toFileHeader(d).toEditList.asScala.map { edit =>
           Stats(
             additions = edit.getEndA - edit.getBeginA,
             deletions = edit.getEndB - edit.getBeginB,
@@ -91,14 +87,13 @@ object Authors {
           )
         }
       }
-      .reduce((sum, stats) => Stats(sum.additions + stats.additions, sum.deletions + stats.deletions, 1))
+      .fold(Stats(0, 0, 1))((sum, stats) => Stats(sum.additions + stats.additions, sum.deletions + stats.deletions, 1))
   }
 }
 
 object DiffSource {
   def apply(repo: String, from: String, to: String)(implicit ec: ExecutionContext,
-                                                    sys: ActorSystem,
-                                                    mat: Materializer): Source[ByteString, NotUsed] =
+                                                    sys: ActorSystem): Source[ByteString, NotUsed] =
     Source
       .fromFuture(
         Marshal(Uri(s"/repos/$repo/compare/$from...$to"))
@@ -117,10 +112,11 @@ object SortingMachine {
 }
 
 object StatsAggregator {
-  def apply()(implicit repo: FileRepository): Flow[Commit, AuthorStats, NotUsed] =
+  def apply()(implicit repo: FileRepository, log: LoggingAdapter): Flow[Commit, AuthorStats, NotUsed] =
     Flow[Commit]
       .filterNot(_.message.startsWith("Merge pull request"))
       .groupBy(Authors.MaxAuthors, commit => commit.githubAuthor.map(_.login).getOrElse(commit.gitAuthor.email))
+      .log("Commit")
       .map(commit => AuthorStats(commit.gitAuthor, commit.githubAuthor, Authors.shaToStats(commit.sha)))
       .reduce(
         (aggr, elem) =>
