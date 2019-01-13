@@ -4,6 +4,7 @@ import java.io.File
 
 import akka.NotUsed
 import akka.actor.ActorSystem
+import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.marshalling.PredefinedToRequestMarshallers._
@@ -48,6 +49,7 @@ object Authors {
     implicit val sys = ActorSystem("Authors", classLoader = Some(cld))
     implicit val mat = ActorMaterializer()
     implicit val gitRepository = Authors.gitRepo(path)
+    implicit val log = Logging(sys, this.getClass)
 
     import sys.dispatcher
 
@@ -110,7 +112,7 @@ object SortingMachine {
 }
 
 object StatsAggregator {
-  def apply()(implicit repo: FileRepository): Flow[Commit, AuthorStats, NotUsed] =
+  def apply()(implicit repo: FileRepository, log: LoggingAdapter): Flow[Commit, AuthorStats, NotUsed] =
     Flow[Commit]
       .filterNot(_.message.startsWith("Merge pull request"))
       .groupBy(Authors.MaxAuthors, commit => commit.githubAuthor.map(_.login).getOrElse(commit.gitAuthor.email))
