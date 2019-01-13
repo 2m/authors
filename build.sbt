@@ -44,6 +44,8 @@ inThisBuild(
                             "https://gitter.im/2m/authors",
                             url("https://github.com/2m/authors/graphs/contributors")),
     bintrayOrganization := Some("2m"),
-    scalafmtOnCompile := true
+    scalafmtOnCompile := true,
+    // show full stack traces and test case durations
+    testOptions in Test += Tests.Argument("-oDF")
   )
 )

@@ -92,6 +92,25 @@ class AuthorsSpec
         }
       }
     }
+
+    "get stats when added file is binary" in {
+      implicit val repo = Authors.gitRepo(".git/modules/core/src/test/resources/authors-test-repo")
+      val stats = Source(
+        List(
+          Commit("901392a",
+                 "message",
+                 GitAuthor("test", "test1@test.lt"),
+                 Some(GithubAuthor("test", "http://users/test", "http://avatars/test")))
+        )
+      ).via(StatsAggregator())
+        .runWith(Sink.head)
+
+      whenReady(stats) {
+        _ should matchPattern {
+          case AuthorStats(_, _, Stats(0, 0, 1)) =>
+        }
+      }
+    }
   }
 
   override def afterAll() =

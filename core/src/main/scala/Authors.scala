@@ -12,7 +12,6 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
 import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
-import com.typesafe.config.ConfigFactory
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.internal.storage.file.FileRepository
 import org.eclipse.jgit.util.io.DisabledOutputStream
@@ -45,13 +44,8 @@ object Authors {
   }
 
   def summary(repo: String, from: String, to: String, path: String): Future[String] = {
-    val config = ConfigFactory.parseString("""
-        |akka.loglevel = ERROR
-      """.stripMargin)
-
     val cld = classOf[ActorSystem].getClassLoader
-    implicit val sys =
-      ActorSystem("Authors", config.withFallback(ConfigFactory.load(cld)), cld)
+    implicit val sys = ActorSystem("Authors", classLoader = Some(cld))
     implicit val mat = ActorMaterializer()
     implicit val gitRepository = Authors.gitRepo(path)
 
@@ -91,7 +85,7 @@ object Authors {
           )
         }
       }
-      .reduce((sum, stats) => Stats(sum.additions + stats.additions, sum.deletions + stats.deletions, 1))
+      .fold(Stats(0, 0, 1))((sum, stats) => Stats(sum.additions + stats.additions, sum.deletions + stats.deletions, 1))
   }
 }
 
@@ -120,6 +114,7 @@ object StatsAggregator {
     Flow[Commit]
       .filterNot(_.message.startsWith("Merge pull request"))
       .groupBy(Authors.MaxAuthors, commit => commit.githubAuthor.map(_.login).getOrElse(commit.gitAuthor.email))
+      .log("Commit")
       .map(commit => AuthorStats(commit.gitAuthor, commit.githubAuthor, Authors.shaToStats(commit.sha)))
       .reduce(
         (aggr, elem) =>
