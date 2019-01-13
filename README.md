@@ -19,7 +19,7 @@ Inspired by:
 Add this to your sbt build plugins, in either `project/plugins.sbt` or `~/.sbt/1.0/plugins/build.sbt`:
 
 ```scala
-addSbtPlugin("lt.dvim.authors" % "sbt-authors" % "<latest version>")
+addSbtPlugin("lt.dvim.authors" % "sbt-authors" % "1.0.1")
 resolvers += Resolver.bintrayRepo("jypma", "maven") // for ts-reaktive
 ```
 
@@ -39,7 +39,7 @@ resolvers += Resolver.bintrayRepo("jypma", "maven") // for ts-reaktive
 
   Fetches the authors summarty between `v0.20` tag and the last commit and puts it to your clipboard
   
-* `coursier launch -r bintray:jypma/maven lt.dvim.authors::authors-core:1.0.0 -- akka/alpakka v0.19 v0.20 ./`
+* `coursier launch -r bintray:jypma/maven lt.dvim.authors::authors-core:1.0.1 -- akka/alpakka v0.19 v0.20 ./`
 
   This will use [`coursier`](https://github.com/coursier/coursier) to launch the tool directly. You will have to be in the checkedout project directory when runnig this command. It will print out the authors summary to stdout. 
 
