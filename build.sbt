@@ -16,7 +16,7 @@ lazy val core = project
         "com.tradeshift"       %% "ts-reaktive-marshal-akka" % "0.10.0" exclude("org.slf4j", "slf4j-log4j12"),
         "com.madgag.scala-git" %% "scala-git"                % "4.0",
         "ch.qos.logback"       %  "logback-classic"          % "1.2.3",
-        "org.scalatest"        %% "scalatest"                % "3.0.5" % "test",
+        "org.scalatest"        %% "scalatest"                % "3.0.6" % "test",
         "com.typesafe.akka"    %% "akka-testkit"             % Akka % "test"
       )
     }
