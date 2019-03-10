@@ -136,7 +136,7 @@ object MarkdownConverter {
         val authorId = author.githubAuthor.map { gh =>
           // using html instead of markdown, because default
           // avatars come from github not resized
-          s"""[<img width="20" alt="${gh.login}" src="${gh.avatar}&s=40"> **${gh.login}**](${gh.url})"""
+          s"""[<img width="20" alt="${gh.login}" src="${gh.avatar}&amp;s=40"/> **${gh.login}**](${gh.url})"""
         } getOrElse {
           author.gitAuthor.name
         }
