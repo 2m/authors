@@ -46,6 +46,6 @@ object AuthorsPlugin extends AutoPlugin {
 
       Await.result(summary, 30.seconds)
     },
-    aggregate in authors := false,
+    aggregate in authors := false
   )
 }

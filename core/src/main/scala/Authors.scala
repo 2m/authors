@@ -92,8 +92,10 @@ object Authors {
 }
 
 object DiffSource {
-  def apply(repo: String, from: String, to: String)(implicit ec: ExecutionContext,
-                                                    sys: ActorSystem): Source[ByteString, NotUsed] =
+  def apply(repo: String, from: String, to: String)(
+      implicit ec: ExecutionContext,
+      sys: ActorSystem
+  ): Source[ByteString, NotUsed] =
     Source
       .fromFuture(
         Marshal(Uri(s"/repos/$repo/compare/$from...$to"))
@@ -121,10 +123,12 @@ object StatsAggregator {
       .reduce(
         (aggr, elem) =>
           aggr.copy(
-            stats = Stats(additions = aggr.stats.additions + elem.stats.additions,
-                          deletions = aggr.stats.deletions + elem.stats.deletions,
-                          aggr.stats.commits + elem.stats.commits)
-        )
+            stats = Stats(
+              additions = aggr.stats.additions + elem.stats.additions,
+              deletions = aggr.stats.deletions + elem.stats.deletions,
+              aggr.stats.commits + elem.stats.commits
+            )
+          )
       )
       .mergeSubstreams
 }
@@ -134,12 +138,12 @@ object MarkdownConverter {
     Flow[AuthorStats]
       .map { author =>
         val authorId = author.githubAuthor.map { gh =>
-          // using html instead of markdown, because default
-          // avatars come from github not resized
-          s"""[<img width="20" alt="${gh.login}" src="${gh.avatar}&amp;s=40"/> **${gh.login}**](${gh.url})"""
-        } getOrElse {
-          author.gitAuthor.name
-        }
+            // using html instead of markdown, because default
+            // avatars come from github not resized
+            s"""[<img width="20" alt="${gh.login}" src="${gh.avatar}&amp;s=40"/> **${gh.login}**](${gh.url})"""
+          } getOrElse {
+            author.gitAuthor.name
+          }
 
         s"| $authorId | ${author.stats.commits} | ${author.stats.additions} | ${author.stats.deletions} |"
       }

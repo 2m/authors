@@ -1,26 +1,41 @@
 language: scala
+jdk: oraclejdk8
 
-scala:
-  - "2.12.4"
+jobs:
+   include:
+     - stage: check
+       script: sbt scalafmtCheck || { echo "[error] Unformatted code found. Please run 'Test/compile' and commit the reformatted code."; false; }
+       name: "Code style check (fixed with `sbt Test/compile`)"
+     - script: sbt scalafmtSbtCheck || { echo "[error] Unformatted sbt code found. Please run 'scalafmtSbt' and commit the reformatted code."; false; }
+       name: "Build code style check (fixed with `sbt scalafmtSbt`)"
 
-jdk:
-  - oraclejdk8
+     - stage: test
+       script: sbt test
+       name: Run all unit tests
+     - before_script:
+       # start X for the clipboard access in tests
+       - "export DISPLAY=:99.0"
+       - "sh -e /etc/init.d/xvfb start"
+       - sleep 3 # give xvfb some time to start
+       script: sbt scripted
+       name: Run all sbt scripted tests
 
-before_script:
-  # start X for the clipboard access in tests
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
+     - stage: publish
+       script: sbt core/publish core/bintraySyncMavenCentral plugin/publish
+       name: Publish artifacts
 
-script: sbt test scripted
+stages:
+  # runs on master commits and PRs
+  - name: check
+    if: NOT tag =~ ^v
 
-deploy:
-  provider: script
-  script:
-    - sbt core/publish core/bintraySyncMavenCentral plugin/publish
-  on:
-    tags: true
-    repo: 2m/authors
+  # runs on master commits and PRs
+  - name: test
+    if: NOT tag =~ ^v
+
+  # runs on main repo master commits or version-tagged commits
+  - name: publish
+    if: repo = 2m/authors AND ( ( branch = master AND type = push ) OR tag =~ ^v )
 
 before_cache:
   - find $HOME/.ivy2 -name "ivydata-*.properties" -print -delete
@@ -30,6 +45,7 @@ cache:
   directories:
     - $HOME/.ivy2/cache
     - $HOME/.sbt/boot
+    - $HOME/.sbt/launchers
 
 env:
   global:

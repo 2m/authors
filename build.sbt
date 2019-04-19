@@ -5,6 +5,9 @@ lazy val authors = project
 lazy val core = project
   .settings(
     name := "authors-core",
+    // stick to 2.12.4 until 2.12.9 comes out with the following fixed:
+    // https://github.com/scala/bug/issues/11373
+    scalaVersion := "2.12.4",
     resolvers += Resolver.bintrayRepo("jypma", "maven"), {
       val Akka = "2.5.22"
       val AkkaHttp = "10.1.8"
@@ -13,9 +16,9 @@ lazy val core = project
         "com.typesafe.akka"    %% "akka-stream"              % Akka,
         "com.typesafe.akka"    %% "akka-slf4j"               % Akka,
         "com.typesafe.akka"    %% "akka-http"                % AkkaHttp,
-        "com.tradeshift"       %% "ts-reaktive-marshal-akka" % "0.11.0" exclude("org.slf4j", "slf4j-log4j12"),
+        "com.tradeshift"       %% "ts-reaktive-marshal-akka" % "0.11.0" exclude ("org.slf4j", "slf4j-log4j12"),
         "com.madgag.scala-git" %% "scala-git"                % "4.0",
-        "ch.qos.logback"       %  "logback-classic"          % "1.2.3",
+        "ch.qos.logback"       % "logback-classic"           % "1.2.3",
         "org.scalatest"        %% "scalatest"                % "3.0.7" % "test",
         "com.typesafe.akka"    %% "akka-testkit"             % Akka % "test"
       )
@@ -41,10 +44,12 @@ inThisBuild(
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
     homepage := Some(url("https://github.com/2m/authors")),
     scmInfo := Some(ScmInfo(url("https://github.com/2m/authors"), "git@github.com:2m/authors.git")),
-    developers += Developer("contributors",
-                            "Contributors",
-                            "https://gitter.im/2m/authors",
-                            url("https://github.com/2m/authors/graphs/contributors")),
+    developers += Developer(
+        "contributors",
+        "Contributors",
+        "https://gitter.im/2m/authors",
+        url("https://github.com/2m/authors/graphs/contributors")
+      ),
     bintrayOrganization := Some("2m"),
     scalafmtOnCompile := true,
     // show full stack traces and test case durations
