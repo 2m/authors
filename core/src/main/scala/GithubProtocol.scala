@@ -25,12 +25,14 @@ object GithubProtocol {
       option(
         field("author", githubAuthorProto)
       ),
-      field("commit",
-            `object`(
-              field("author", gitAuthorProto),
-              field("message", stringValue),
-              (gitAuthor: GitAuthor, message: String) => (gitAuthor, message)
-            )),
+      field(
+        "commit",
+        `object`(
+          field("author", gitAuthorProto),
+          field("message", stringValue),
+          (gitAuthor: GitAuthor, message: String) => (gitAuthor, message)
+        )
+      ),
       field("sha", stringValue),
       (githubAuthor: VavrOption[GithubAuthor], gitAuthorAndMessage: (GitAuthor, String), sha: String) =>
         Commit(sha, gitAuthorAndMessage._2, gitAuthorAndMessage._1, githubAuthor)
