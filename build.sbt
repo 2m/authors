@@ -5,7 +5,9 @@ lazy val authors = project
 lazy val core = project
   .settings(
     name := "authors-core",
-    scalaVersion := "2.12.8",
+    // stick to 2.12.4 until 2.12.9 comes out with the following fixed:
+    // https://github.com/scala/bug/issues/11373
+    scalaVersion := "2.12.4",
     resolvers += Resolver.bintrayRepo("jypma", "maven"), {
       val Akka = "2.5.22"
       val AkkaHttp = "10.1.8"
