@@ -5,6 +5,7 @@ lazy val authors = project
 lazy val core = project
   .settings(
     name := "authors-core",
+    scalaVersion := "2.12.8",
     resolvers += Resolver.bintrayRepo("jypma", "maven"), {
       val Akka = "2.5.22"
       val AkkaHttp = "10.1.8"
