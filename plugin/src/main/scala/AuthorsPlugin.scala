@@ -2,9 +2,9 @@ package lt.dvim.authors
 
 import sbt._
 import sbt.Keys._
-import complete.DefaultParsers._
+import sbt.complete.DefaultParsers._
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
 object AuthorsPlugin extends AutoPlugin {
@@ -12,28 +12,14 @@ object AuthorsPlugin extends AutoPlugin {
   import autoImport._
 
   override def trigger = AllRequirements
-  override def projectSettings: Seq[Setting[_]] = authorsSettings(Compile)
+  override def buildSettings: Seq[Setting[_]] = authorsBuildSettings
 
-  def authorsSettings(config: Configuration): Seq[Setting[_]] = authorsGlobalSettings ++ inConfig(config)(Seq())
+  private final val ArgsParser = spaceDelimited("<from> <to>")
 
-  def authorsGlobalSettings: Seq[Setting[_]] = Seq(
+  def authorsBuildSettings: Seq[Setting[_]] = Seq(
     authors := {
-      val (from, to) = spaceDelimited("<from> <to>").parsed match {
-        case Seq(from, to) => (from, to)
-        case _ =>
-          sys.error("Please specify the <from> and <to> tags as the arguments to the task.")
-      }
-
-      // get the org/repo name from the scm info
-      val repo = scmInfo.value.map(_.browseUrl.getPath.drop(1)).getOrElse {
-        sys.error("Please set the scmInfo setting.")
-      }
-
-      streams.value.log.info(s"Fetching authors summary for $repo between $from and $to")
-
       import scala.concurrent.ExecutionContext.Implicits.global
-      val summary = Authors
-        .summary(repo, from, to, baseDirectory.value.getAbsolutePath)
+      val summary = authorsSummary(ArgsParser.parsed, scmInfo.value, baseDirectory.value, streams.value)
         .map { s =>
           import java.awt.Toolkit
           import java.awt.datatransfer._
@@ -46,6 +32,41 @@ object AuthorsPlugin extends AutoPlugin {
 
       Await.result(summary, 30.seconds)
     },
-    aggregate in authors := false
+    authors / aggregate := false,
+    authorsFile := {
+      import scala.concurrent.ExecutionContext.Implicits.global
+      val summary = authorsSummary(ArgsParser.parsed, scmInfo.value, baseDirectory.value, streams.value)
+        .map { s =>
+          val file = baseDirectory.value / "target" / "authors.md"
+          IO.write(file, s)
+          streams.value.log.info(s"Authors summary written to ${file.getAbsoluteFile}")
+          file
+        }
+
+      Await.result(summary, 30.seconds)
+    },
+    authorsFile / aggregate := false
   )
+
+  private def authorsSummary(
+      args: Seq[String],
+      scmInfo: Option[ScmInfo],
+      baseDirectory: File,
+      streams: TaskStreams
+  ): Future[String] = {
+    val (from, to) = args match {
+      case Seq(from, to) => (from, to)
+      case _ =>
+        sys.error("Please specify the <from> and <to> tags as the arguments to the task.")
+    }
+
+    // get the org/repo name from the scm info
+    val repo = scmInfo.map(_.browseUrl.getPath.drop(1)).getOrElse {
+      sys.error("Please set the scmInfo setting.")
+    }
+
+    streams.log.info(s"Fetching authors summary for $repo between $from and $to")
+
+    Authors.summary(repo, from, to, baseDirectory.getAbsolutePath)
+  }
 }
