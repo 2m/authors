@@ -24,10 +24,11 @@ lazy val core = project
       )
     }
   )
+  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val plugin = project
   .dependsOn(core)
-  .enablePlugins(SbtPlugin)
+  .enablePlugins(SbtPlugin, AutomateHeaderPlugin)
   .settings(
     name := "sbt-authors",
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
@@ -41,7 +42,9 @@ lazy val plugin = project
 inThisBuild(
   Seq(
     organization := "lt.dvim.authors",
+    organizationName := "Martynas Mickevičius",
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
+    startYear := Some(2016),
     homepage := Some(url("https://github.com/2m/authors")),
     scmInfo := Some(ScmInfo(url("https://github.com/2m/authors"), "git@github.com:2m/authors.git")),
     developers += Developer(
