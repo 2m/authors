@@ -1,7 +1,23 @@
 # Will be using local clone of the repo to test against
 $ exec git clone https://github.com/2m/authors.git target/authors
+> set baseDirectory := baseDirectory.value./("target")./("authors")
 
+# must work with scmInfo set in the build scope
+> set ThisBuild / scmInfo := Some(ScmInfo(url("https://github.com/2m/authors"),"git@github.com:2m/authors.git"))
+> set scmInfo := None
+
+# this task copies output to the clipboard, so no real way to check the output
+# therefore just run it to see if it succeeds
 > authors v1.0.0 v1.0.1
+
+> authorsFile v1.0.0 v1.0.1
+$ must-mirror target/authors/target/authors.md expected-authors.md
+
+# must work with scmInfo set without a scope
+> set ThisBuild / scmInfo := None
+> set scmInfo := Some(ScmInfo(url("https://github.com/2m/authors"),"git@github.com:2m/authors.git"))
+
+> clean
 
 > authorsFile v1.0.0 v1.0.1
 $ must-mirror target/authors/target/authors.md expected-authors.md
