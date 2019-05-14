@@ -16,7 +16,7 @@ lazy val core = project
         "com.typesafe.akka"    %% "akka-stream"              % Akka,
         "com.typesafe.akka"    %% "akka-slf4j"               % Akka,
         "com.typesafe.akka"    %% "akka-http"                % AkkaHttp,
-        "com.tradeshift"       %% "ts-reaktive-marshal-akka" % "0.12.0" exclude ("org.slf4j", "slf4j-log4j12"),
+        "com.tradeshift"       %% "ts-reaktive-marshal-akka" % "0.12.1" exclude ("org.slf4j", "slf4j-log4j12"),
         "com.madgag.scala-git" %% "scala-git"                % "4.0",
         "ch.qos.logback"       % "logback-classic"           % "1.2.3",
         "org.scalatest"        %% "scalatest"                % "3.0.7" % "test",
