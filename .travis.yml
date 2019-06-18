@@ -1,5 +1,9 @@
+dist: xenial
+services:
+  - xvfb
+
 language: scala
-jdk: oraclejdk8
+jdk: openjdk8
 
 jobs:
    include:
@@ -12,12 +16,7 @@ jobs:
      - stage: test
        script: sbt test
        name: Run all unit tests
-     - before_script:
-       # start X for the clipboard access in tests
-       - "export DISPLAY=:99.0"
-       - "sh -e /etc/init.d/xvfb start"
-       - sleep 3 # give xvfb some time to start
-       script: sbt scripted
+     - script: sbt scripted
        name: Run all sbt scripted tests
 
      - stage: publish
