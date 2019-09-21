@@ -10,7 +10,7 @@ lazy val core = project
     scalaVersion := "2.12.4",
     resolvers += Resolver.bintrayRepo("jypma", "maven"), {
       val Akka = "2.5.25"
-      val AkkaHttp = "10.1.9"
+      val AkkaHttp = "10.1.10"
       libraryDependencies ++= Seq(
         "com.typesafe.akka"    %% "akka-actor"               % Akka,
         "com.typesafe.akka"    %% "akka-stream"              % Akka,
