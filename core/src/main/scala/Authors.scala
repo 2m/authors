@@ -154,12 +154,12 @@ object MarkdownConverter {
     Flow[AuthorStats]
       .map { author =>
         val authorId = author.githubAuthor.map { gh =>
-            // using html instead of markdown, because default
-            // avatars come from github not resized
-            s"""[<img width="20" alt="${gh.login}" src="${gh.avatar}&amp;s=40"/> **${gh.login}**](${gh.url})"""
-          } getOrElse {
-            author.gitAuthor.name
-          }
+          // using html instead of markdown, because default
+          // avatars come from github not resized
+          s"""[<img width="20" alt="${gh.login}" src="${gh.avatar}&amp;s=40"/> **${gh.login}**](${gh.url})"""
+        } getOrElse {
+          author.gitAuthor.name
+        }
 
         s"| $authorId | ${author.stats.commits} | ${author.stats.additions} | ${author.stats.deletions} |"
       }
