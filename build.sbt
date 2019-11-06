@@ -9,7 +9,7 @@ lazy val core = project
     // https://github.com/scala/bug/issues/11373
     scalaVersion := "2.12.4",
     resolvers += Resolver.bintrayRepo("jypma", "maven"), {
-      val Akka = "2.5.26"
+      val Akka = "2.6.0"
       val AkkaHttp = "10.1.10"
       libraryDependencies ++= Seq(
         "com.typesafe.akka"    %% "akka-actor"               % Akka,
