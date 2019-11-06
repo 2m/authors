@@ -25,7 +25,6 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.marshalling.PredefinedToRequestMarshallers._
 import akka.http.scaladsl.model.{HttpRequest, Uri}
-import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
 import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
@@ -63,7 +62,6 @@ object Authors {
   def summary(repo: String, from: String, to: String, path: String): Future[String] = {
     val cld = classOf[ActorSystem].getClassLoader
     implicit val sys = ActorSystem("Authors", classLoader = Some(cld))
-    implicit val mat = ActorMaterializer()
     implicit val gitRepository = Authors.gitRepo(path)
     implicit val log = Logging(sys, this.getClass)
 
@@ -113,7 +111,7 @@ object DiffSource {
       sys: ActorSystem
   ): Source[ByteString, NotUsed] =
     Source
-      .fromFuture(
+      .future(
         Marshal(Uri(s"/repos/$repo/compare/$from...$to"))
           .to[HttpRequest]
       )
