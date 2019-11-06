@@ -5,9 +5,7 @@ lazy val authors = project
 lazy val core = project
   .settings(
     name := "authors-core",
-    // stick to 2.12.4 until 2.12.9 comes out with the following fixed:
-    // https://github.com/scala/bug/issues/11373
-    scalaVersion := "2.12.4",
+    scalaVersion := "2.12.10",
     resolvers += Resolver.bintrayRepo("jypma", "maven"), {
       val Akka = "2.6.0"
       val AkkaHttp = "10.1.10"
@@ -20,7 +18,17 @@ lazy val core = project
         "com.madgag.scala-git" %% "scala-git"                % "4.2",
         "ch.qos.logback"       % "logback-classic"           % "1.2.3",
         "org.scalatest"        %% "scalatest"                % "3.0.8" % "test",
-        "com.typesafe.akka"    %% "akka-testkit"             % Akka % "test"
+        "com.typesafe.akka"    %% "akka-testkit"             % Akka % "test",
+        // these come from ts-reaktive-marshal-akka
+        "com.typesafe.akka"    %% "akka-persistence"         % Akka,
+        "com.typesafe.akka"    %% "akka-remote"              % Akka,
+        "com.typesafe.akka"    %% "akka-cluster"             % Akka,
+        "com.typesafe.akka"    %% "akka-cluster-tools"       % Akka,
+        "com.typesafe.akka"    %% "akka-distributed-data"    % Akka,
+        "com.typesafe.akka"    %% "akka-persistence-query"   % Akka,
+        "com.typesafe.akka"    %% "akka-cluster-sharding"    % Akka,
+        "com.typesafe.akka"    %% "akka-protobuf"            % Akka,
+        "com.typesafe.akka"    %% "akka-http-jackson"        % AkkaHttp,
       )
     }
   )
