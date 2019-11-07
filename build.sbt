@@ -20,15 +20,15 @@ lazy val core = project
         "org.scalatest"        %% "scalatest"                % "3.0.8" % "test",
         "com.typesafe.akka"    %% "akka-testkit"             % Akka % "test",
         // these come from ts-reaktive-marshal-akka
-        "com.typesafe.akka"    %% "akka-persistence"         % Akka,
-        "com.typesafe.akka"    %% "akka-remote"              % Akka,
-        "com.typesafe.akka"    %% "akka-cluster"             % Akka,
-        "com.typesafe.akka"    %% "akka-cluster-tools"       % Akka,
-        "com.typesafe.akka"    %% "akka-distributed-data"    % Akka,
-        "com.typesafe.akka"    %% "akka-persistence-query"   % Akka,
-        "com.typesafe.akka"    %% "akka-cluster-sharding"    % Akka,
-        "com.typesafe.akka"    %% "akka-protobuf"            % Akka,
-        "com.typesafe.akka"    %% "akka-http-jackson"        % AkkaHttp,
+        "com.typesafe.akka" %% "akka-persistence"       % Akka,
+        "com.typesafe.akka" %% "akka-remote"            % Akka,
+        "com.typesafe.akka" %% "akka-cluster"           % Akka,
+        "com.typesafe.akka" %% "akka-cluster-tools"     % Akka,
+        "com.typesafe.akka" %% "akka-distributed-data"  % Akka,
+        "com.typesafe.akka" %% "akka-persistence-query" % Akka,
+        "com.typesafe.akka" %% "akka-cluster-sharding"  % Akka,
+        "com.typesafe.akka" %% "akka-protobuf"          % Akka,
+        "com.typesafe.akka" %% "akka-http-jackson"      % AkkaHttp
       )
     }
   )
