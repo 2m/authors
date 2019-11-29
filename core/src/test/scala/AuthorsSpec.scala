@@ -26,9 +26,11 @@ import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
 import com.typesafe.config.ConfigFactory
 import lt.dvim.authors.GithubProtocol._
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{BeforeAndAfterAll, Inside, Matchers, WordSpecLike}
+import org.scalatest.{BeforeAndAfterAll, Inside}
 
 import scala.concurrent.duration._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 
 object AuthorsSpec {
   val config = ConfigFactory.parseString("""
@@ -38,7 +40,7 @@ object AuthorsSpec {
 
 class AuthorsSpec
     extends TestKit(ActorSystem("AuthorsSpec", AuthorsSpec.config.withFallback(ConfigFactory.load)))
-    with WordSpecLike
+    with AnyWordSpecLike
     with BeforeAndAfterAll
     with Matchers
     with Inside
