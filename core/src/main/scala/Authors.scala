@@ -134,15 +134,14 @@ object StatsAggregator {
       .groupBy(Authors.MaxAuthors, commit => commit.githubAuthor.map(_.login).getOrElse(commit.gitAuthor.email))
       .log("Commit")
       .map(commit => AuthorStats(commit.gitAuthor, commit.githubAuthor, Authors.shaToStats(commit.sha)))
-      .reduce(
-        (aggr, elem) =>
-          aggr.copy(
-            stats = Stats(
-              additions = aggr.stats.additions + elem.stats.additions,
-              deletions = aggr.stats.deletions + elem.stats.deletions,
-              aggr.stats.commits + elem.stats.commits
-            )
+      .reduce((aggr, elem) =>
+        aggr.copy(
+          stats = Stats(
+            additions = aggr.stats.additions + elem.stats.additions,
+            deletions = aggr.stats.deletions + elem.stats.deletions,
+            aggr.stats.commits + elem.stats.commits
           )
+        )
       )
       .mergeSubstreams
 }
