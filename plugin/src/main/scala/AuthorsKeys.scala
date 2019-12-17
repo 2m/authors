@@ -19,6 +19,7 @@ package lt.dvim.authors
 import sbt._
 
 trait AuthorsKeys {
-  val authors = inputKey[Unit]("Generate authors report to clipboard.")
+  val authors = inputKey[Unit]("Generate authors report to stdout.")
   val authorsFile = inputKey[File]("Generate authors report to a file.")
+  val authorsClipboard = inputKey[Unit]("Generate authors report to clipboard.")
 }

@@ -41,13 +41,8 @@ object AuthorsPlugin extends AutoPlugin {
         baseDirectory.value,
         streams.value
       ).map { s =>
-        import java.awt.Toolkit
-        import java.awt.datatransfer._
-        val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
-        val selection = new StringSelection(s)
-        clipboard.setContents(selection, selection)
-
-        streams.value.log.info("Authors summary placed into the clipboard.")
+        println(s)
+        streams.value.log.info("Authors summary written to stdout.")
       }
 
       Await.result(summary, 30.seconds)
@@ -69,7 +64,27 @@ object AuthorsPlugin extends AutoPlugin {
 
       Await.result(summary, 30.seconds)
     },
-    authorsFile / aggregate := false
+    authorsFile / aggregate := false,
+    authorsClipboard := {
+      import scala.concurrent.ExecutionContext.Implicits.global
+      val summary = authorsSummary(
+        ArgsParser.parsed,
+        scmInfo.value.orElse((ThisBuild / scmInfo).value),
+        baseDirectory.value,
+        streams.value
+      ).map { s =>
+        import java.awt.Toolkit
+        import java.awt.datatransfer._
+        val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
+        val selection = new StringSelection(s)
+        clipboard.setContents(selection, selection)
+
+        streams.value.log.info("Authors summary placed into the clipboard.")
+      }
+
+      Await.result(summary, 30.seconds)
+    },
+    authorsClipboard / aggregate := false
   )
 
   private def authorsSummary(

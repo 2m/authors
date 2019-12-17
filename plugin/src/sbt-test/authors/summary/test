@@ -6,9 +6,13 @@ $ exec git clone https://github.com/2m/authors.git target/authors
 > set ThisBuild / scmInfo := Some(ScmInfo(url("https://github.com/2m/authors"),"git@github.com:2m/authors.git"))
 > set scmInfo := None
 
-# this task copies output to the clipboard, so no real way to check the output
+# this task prints output to stdout, so no real way to check the output
 # therefore just run it to see if it succeeds
 > authors v1.0.0 v1.0.1
+
+# this task copies output to the clipboard, so no real way to check the output
+# therefore just run it to see if it succeeds
+> authorsClipboard v1.0.0 v1.0.1
 
 > authorsFile v1.0.0 v1.0.1
 $ must-mirror target/authors/target/authors.md expected-authors.md
