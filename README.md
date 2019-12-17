@@ -23,7 +23,7 @@ Inspired by:
 Add this to your sbt build plugins, in either `project/plugins.sbt` or `~/.sbt/1.0/plugins/build.sbt`:
 
 ```scala
-addSbtPlugin("lt.dvim.authors" % "sbt-authors" % "1.0.2")
+addSbtPlugin("lt.dvim.authors" % "sbt-authors" % "1.1")
 resolvers += Resolver.bintrayRepo("jypma", "maven") // for ts-reaktive
 ```
 
@@ -31,24 +31,25 @@ resolvers += Resolver.bintrayRepo("jypma", "maven") // for ts-reaktive
 
 ## Tasks
 
-* `authors <from> <to>` Fetches the authors summary between two tags and puts it to your clipboard.
+* `authors <from> <to>` Fetches the authors summary between two tags and prints it to stdout.
 * `authorsFile <from> <to>` Writes the same authors summary to a `target/authors.md` file.
+* `authorsClipboard <from> <to>` Puts the same authors summary to your clipboard.
 
 ## Example usage
 
 * `sbt "authors v0.20 v0.21"`
 
   Fetches the authors summary between `v0.20` and `v0.21` tags and puts it to your clipboard
-  
+
 * `sbt "authors v0.20 HEAD"`
 
   Fetches the authors summary between `v0.20` tag and the last commit and puts it to your clipboard
-  
-* `coursier launch -r bintray:jypma/maven lt.dvim.authors::authors-core:1.0.2 -- akka/alpakka v0.19 v0.20 ./`
 
-  This will use [`coursier`](https://github.com/coursier/coursier) to launch the tool directly. You will have to be in the checkedout project directory when running this command. It will print out the authors summary to stdout. 
-  
-* `coursier bootstrap -r bintray:jypma/maven lt.dvim.authors:authors-core_2.12:1.0.2 -o authors `
+* `coursier launch -r bintray:jypma/maven lt.dvim.authors::authors-core:1.1 -- akka/alpakka v0.19 v0.20 ./`
+
+  This will use [`coursier`](https://github.com/coursier/coursier) to launch the tool directly. You will have to be in the checkedout project directory when running this command. It will print out the authors summary to stdout.
+
+* `coursier bootstrap -r bintray:jypma/maven lt.dvim.authors:authors-core_2.12:1.1 -o authors `
 
   This will create an executable `authors` which then can be used to launch the application with the same arguments as mentioned above: `authors akka/alpakka v0.19 v0.20 ./`
 
