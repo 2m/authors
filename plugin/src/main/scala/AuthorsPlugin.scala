@@ -16,12 +16,12 @@
 
 package lt.dvim.authors
 
-import sbt._
-import sbt.Keys._
-import sbt.complete.DefaultParsers._
-
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
+
+import sbt.Keys._
+import sbt._
+import sbt.complete.DefaultParsers._
 
 object AuthorsPlugin extends AutoPlugin {
   object autoImport extends AuthorsKeys
@@ -106,6 +106,6 @@ object AuthorsPlugin extends AutoPlugin {
 
     streams.log.info(s"Fetching authors summary for $repo between $from and $to")
 
-    Authors.summary(repo, from, to, baseDirectory.getAbsolutePath)
+    Authors.summary(Some(repo), from, to, baseDirectory.getAbsolutePath)
   }
 }

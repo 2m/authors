@@ -18,8 +18,8 @@ package lt.dvim.authors
 
 import com.tradeshift.reaktive.json.JSONProtocol._
 import com.tradeshift.reaktive.marshal.Protocol._
-import lt.dvim.scala.compat.vavr.OptionConverters._
 import io.vavr.control.{Option => VavrOption}
+import lt.dvim.scala.compat.vavr.OptionConverters._
 
 object GithubProtocol {
   final case class GithubAuthor(login: String, url: String, avatar: String)
