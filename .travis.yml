@@ -22,7 +22,7 @@ jobs:
        name: Run all sbt scripted tests
 
      - stage: publish
-       script: sbt core/publish core/bintraySyncMavenCentral plugin/publish
+       script: sbt cli/publish core/publish core/bintraySyncMavenCentral plugin/publish
        name: Publish artifacts
 
 stages:
