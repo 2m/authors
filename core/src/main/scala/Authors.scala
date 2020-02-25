@@ -36,38 +36,23 @@ import lt.dvim.authors.GithubProtocol.{AuthorStats, Commit, Stats}
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 
 import scala.collection.JavaConverters._
-import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
 
 object Authors {
   final val MaxAuthors = 1024
   final val GithubApiUrl = "api.github.com"
 
-  def main(args: Array[String]) = {
-    val (repo, from, to, path) = args.toList match {
-      case repo :: from :: to :: path :: Nil => (repo, from, to, path)
-      case _ =>
-        println("""
-            |Usage:
-            |  <repo> <from> <to> <path>
-          """.stripMargin)
-        System.exit(1)
-        ???
-    }
-
-    val future = summary(repo, from, to, path)
-    println(Await.result(future, 30.seconds))
-  }
-
-  def summary(repo: String, from: String, to: String, path: String): Future[String] = {
+  def summary(repo: Option[String], from: String, to: String, path: String): Future[String] = {
     val cld = classOf[ActorSystem].getClassLoader
     implicit val sys = ActorSystem("Authors", classLoader = Some(cld))
     implicit val gitRepository = Authors.gitRepo(path)
     implicit val log = Logging(sys, this.getClass)
 
     import sys.dispatcher
+    def parsedRepo =
+      parseRepo(gitRepository.getConfig().getString("remote", "origin", "url"))
 
-    DiffSource(repo, from, to)
+    DiffSource(repo.getOrElse(parsedRepo), from, to)
       .via(ActsonReader.instance)
       .via(ProtocolReader.of(GithubProtocol.compareProto))
       .via(StatsAggregator())
@@ -81,6 +66,9 @@ object Authors {
         } yield r
       }
   }
+
+  def parseRepo(originUrl: String): String =
+    originUrl.split("github.com").tail.head.drop(1).split(".git").head
 
   def gitRepo(path: String): FileRepository =
     FileRepositoryBuilder

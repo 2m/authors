@@ -106,6 +106,6 @@ object AuthorsPlugin extends AutoPlugin {
 
     streams.log.info(s"Fetching authors summary for $repo between $from and $to")
 
-    Authors.summary(repo, from, to, baseDirectory.getAbsolutePath)
+    Authors.summary(Some(repo), from, to, baseDirectory.getAbsolutePath)
   }
 }

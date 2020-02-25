@@ -1,11 +1,13 @@
+val ScalaVersion = "2.12.10"
+
 lazy val authors = project
   .in(file("."))
-  .aggregate(core, plugin)
+  .aggregate(core, plugin, cli)
 
 lazy val core = project
   .settings(
     name := "authors-core",
-    scalaVersion := "2.12.10",
+    scalaVersion := ScalaVersion,
     resolvers += Resolver.bintrayRepo("jypma", "maven"), {
       val Akka = "2.6.3"
       val AkkaHttp = "10.1.11"
@@ -45,6 +47,17 @@ lazy val plugin = project
       val p2 = publishLocal.value
     },
     scriptedBufferLog := false
+  )
+
+lazy val cli = project
+  .dependsOn(core)
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(
+    name := "authors-cli",
+    scalaVersion := ScalaVersion,
+    libraryDependencies ++= Seq(
+      "org.rogach" %% "scallop" % "3.3.2"
+    )
   )
 
 inThisBuild(
