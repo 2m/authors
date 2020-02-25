@@ -18,6 +18,9 @@ package lt.dvim.authors
 
 import java.io.File
 
+import scala.collection.JavaConverters._
+import scala.concurrent.{ExecutionContext, Future}
+
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.event.{Logging, LoggingAdapter}
@@ -27,16 +30,15 @@ import akka.http.scaladsl.marshalling.PredefinedToRequestMarshallers._
 import akka.http.scaladsl.model.{HttpRequest, Uri}
 import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
+
+import com.madgag.git._
 import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.internal.storage.file.FileRepository
-import org.eclipse.jgit.util.io.DisabledOutputStream
-import com.madgag.git._
-import lt.dvim.authors.GithubProtocol.{AuthorStats, Commit, Stats}
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import org.eclipse.jgit.util.io.DisabledOutputStream
 
-import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, Future}
+import lt.dvim.authors.GithubProtocol.{AuthorStats, Commit, Stats}
 
 object Authors {
   final val MaxAuthors = 1024

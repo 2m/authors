@@ -16,10 +16,10 @@
 
 package lt.dvim.authors
 
-import org.rogach.scallop._
-
-import scala.concurrent.duration._
 import scala.concurrent.Await
+import scala.concurrent.duration._
+
+import org.rogach.scallop._
 
 object AuthorsCli {
   import ScallopOpts._

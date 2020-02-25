@@ -56,8 +56,8 @@ lazy val cli = project
     name := "authors-cli",
     scalaVersion := ScalaVersion,
     libraryDependencies ++= Seq(
-      "org.rogach" %% "scallop" % "3.3.2"
-    )
+        "org.rogach" %% "scallop" % "3.3.2"
+      )
   )
 
 inThisBuild(
@@ -76,6 +76,9 @@ inThisBuild(
       ),
     bintrayOrganization := Some("2m"),
     scalafmtOnCompile := true,
+    scalafixDependencies ++= Seq(
+        "com.nequissimus" %% "sort-imports" % "0.3.1"
+      ),
     // show full stack traces and test case durations
     testOptions in Test += Tests.Argument("-oDF")
   )

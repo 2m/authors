@@ -12,6 +12,8 @@ jobs:
        name: "Code style check (fixed with `sbt Test/compile`)"
      - script: sbt scalafmtSbtCheck || { echo "[error] Unformatted sbt code found. Please run 'scalafmtSbt' and commit the reformatted code."; false; }
        name: "Build code style check (fixed with `sbt scalafmtSbt`)"
+     - script: sbt "scalafix --check" || { echo "[error] Unformatted code found. Please run 'scalafix' and commit the reformatted code."; false; }
+       name: "Code style check (fixed with `sbt scalafix`)"
 
      - stage: test
        script: sbt test
