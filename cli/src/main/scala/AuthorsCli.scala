@@ -22,8 +22,6 @@ import scala.concurrent.duration._
 import org.rogach.scallop._
 
 object AuthorsCli {
-  import ScallopOpts._
-
   class Config(args: Seq[String]) extends ScallopConf(args) {
     banner("""|Fetches a summary of authors that contributed to a project between two points in git history.
               |Usage: authors [-p <path>] [-r <repo>] <from-ref> <to-ref>
