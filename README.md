@@ -18,38 +18,36 @@ Inspired by:
 
 [![asciicast-badge][]][asciicast]
 
-## Setup
+## Usage of the sbt plugin
 
 Add this to your sbt build plugins, in either `project/plugins.sbt` or `~/.sbt/1.0/plugins/build.sbt`:
 
 ```scala
-addSbtPlugin("lt.dvim.authors" % "sbt-authors" % "1.1")
+addSbtPlugin("lt.dvim.authors" % "sbt-authors" % "1.2")
 resolvers += Resolver.bintrayRepo("jypma", "maven") // for ts-reaktive
 ```
 
 `sbt-authors` is an AutoPlugin and therefore that is all that is required.
 
-## Tasks
+### Tasks
 
-* `authors <from> <to>` Fetches the authors summary between two tags and prints it to stdout.
+* `authors <from> <to>` Fetches the authors summary between two points in git history and prints it to stdout. For example:
+
+    `authors v0.20 v0.21` - summary between `v0.20` and `v0.21` git tags
+
+    `authors v0.20 HEAD` - summary between `v0.20` tag and the last commit
+
 * `authorsFile <from> <to>` Writes the same authors summary to a `target/authors.md` file.
 * `authorsClipboard <from> <to>` Puts the same authors summary to your clipboard.
 
-## Example usage
+## Usage of the CLI tool
 
-* `sbt "authors v0.20 v0.21"`
+Use [`coursier`](https://github.com/coursier/coursier) to install and launch `authors` directly.
 
-  Fetches the authors summary between `v0.20` and `v0.21` tags and puts it to your clipboard
+    cs install --contrib authors
 
-* `sbt "authors v0.20 HEAD"`
+Then go to the checkedout folder of your project repository and run the foillowing.
 
-  Fetches the authors summary between `v0.20` tag and the last commit and puts it to your clipboard
+    authors v1.1 v1.2
 
-* `coursier launch -r bintray:jypma/maven lt.dvim.authors::authors-core:1.1 -- akka/alpakka v0.19 v0.20 ./`
-
-  This will use [`coursier`](https://github.com/coursier/coursier) to launch the tool directly. You will have to be in the checkedout project directory when running this command. It will print out the authors summary to stdout.
-
-* `coursier bootstrap -r bintray:jypma/maven lt.dvim.authors:authors-core_2.12:1.1 -o authors `
-
-  This will create an executable `authors` which then can be used to launch the application with the same arguments as mentioned above: `authors akka/alpakka v0.19 v0.20 ./`
-
+This will fetch the summary between the two tags, which will be printed to the stdout.
