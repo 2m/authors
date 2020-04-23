@@ -16,11 +16,11 @@
 
 package lt.dvim.authors
 
+import scala.concurrent.{ Await, Future }
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
 
-import sbt.Keys._
 import sbt._
+import sbt.Keys._
 import sbt.complete.DefaultParsers._
 
 object AuthorsPlugin extends AutoPlugin {
