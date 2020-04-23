@@ -16,8 +16,8 @@
 
 package lt.dvim.authors
 
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class ParseRepoSpec extends AnyWordSpec with Matchers {
 
