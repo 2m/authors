@@ -16,7 +16,7 @@
 
 package lt.dvim.authors
 
-import scala.concurrent.{ Await, Future }
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
 import sbt._
@@ -32,60 +32,61 @@ object AuthorsPlugin extends AutoPlugin {
 
   private final val ArgsParser = spaceDelimited("<from> <to>")
 
-  def authorsProjectSettings: Seq[Setting[_]] = Seq(
-    authors := {
-      import scala.concurrent.ExecutionContext.Implicits.global
-      val summary = authorsSummary(
-        ArgsParser.parsed,
-        scmInfo.value.orElse((ThisBuild / scmInfo).value),
-        baseDirectory.value,
-        streams.value
-      ).map { s =>
-        println(s)
-        streams.value.log.info("Authors summary written to stdout.")
-      }
+  def authorsProjectSettings: Seq[Setting[_]] =
+    Seq(
+      authors := {
+        import scala.concurrent.ExecutionContext.Implicits.global
+        val summary = authorsSummary(
+          ArgsParser.parsed,
+          scmInfo.value.orElse((ThisBuild / scmInfo).value),
+          baseDirectory.value,
+          streams.value
+        ).map { s =>
+          println(s)
+          streams.value.log.info("Authors summary written to stdout.")
+        }
 
-      Await.result(summary, 30.seconds)
-    },
-    authors / aggregate := false,
-    authorsFile := {
-      import scala.concurrent.ExecutionContext.Implicits.global
-      val summary = authorsSummary(
-        ArgsParser.parsed,
-        scmInfo.value.orElse((ThisBuild / scmInfo).value),
-        baseDirectory.value,
-        streams.value
-      ).map { s =>
-        val file = baseDirectory.value / "target" / "authors.md"
-        IO.write(file, s)
-        streams.value.log.info(s"Authors summary written to ${file.getAbsoluteFile}")
-        file
-      }
+        Await.result(summary, 30.seconds)
+      },
+      authors / aggregate := false,
+      authorsFile := {
+        import scala.concurrent.ExecutionContext.Implicits.global
+        val summary = authorsSummary(
+          ArgsParser.parsed,
+          scmInfo.value.orElse((ThisBuild / scmInfo).value),
+          baseDirectory.value,
+          streams.value
+        ).map { s =>
+          val file = baseDirectory.value / "target" / "authors.md"
+          IO.write(file, s)
+          streams.value.log.info(s"Authors summary written to ${file.getAbsoluteFile}")
+          file
+        }
 
-      Await.result(summary, 30.seconds)
-    },
-    authorsFile / aggregate := false,
-    authorsClipboard := {
-      import scala.concurrent.ExecutionContext.Implicits.global
-      val summary = authorsSummary(
-        ArgsParser.parsed,
-        scmInfo.value.orElse((ThisBuild / scmInfo).value),
-        baseDirectory.value,
-        streams.value
-      ).map { s =>
-        import java.awt.Toolkit
-        import java.awt.datatransfer._
-        val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
-        val selection = new StringSelection(s)
-        clipboard.setContents(selection, selection)
+        Await.result(summary, 30.seconds)
+      },
+      authorsFile / aggregate := false,
+      authorsClipboard := {
+        import scala.concurrent.ExecutionContext.Implicits.global
+        val summary = authorsSummary(
+          ArgsParser.parsed,
+          scmInfo.value.orElse((ThisBuild / scmInfo).value),
+          baseDirectory.value,
+          streams.value
+        ).map { s =>
+          import java.awt.Toolkit
+          import java.awt.datatransfer._
+          val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
+          val selection = new StringSelection(s)
+          clipboard.setContents(selection, selection)
 
-        streams.value.log.info("Authors summary placed into the clipboard.")
-      }
+          streams.value.log.info("Authors summary placed into the clipboard.")
+        }
 
-      Await.result(summary, 30.seconds)
-    },
-    authorsClipboard / aggregate := false
-  )
+        Await.result(summary, 30.seconds)
+      },
+      authorsClipboard / aggregate := false
+    )
 
   private def authorsSummary(
       args: Seq[String],

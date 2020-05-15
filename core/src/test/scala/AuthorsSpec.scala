@@ -22,12 +22,12 @@ import scala.concurrent.duration._
 
 import akka.actor.ActorSystem
 import akka.event.Logging
-import akka.stream.scaladsl.{ FileIO, Sink, Source }
+import akka.stream.scaladsl.{FileIO, Sink, Source}
 import akka.testkit.TestKit
 
-import com.tradeshift.reaktive.marshal.stream.{ ActsonReader, ProtocolReader }
+import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
 import com.typesafe.config.ConfigFactory
-import org.scalatest.{ BeforeAndAfterAll, Inside }
+import org.scalatest.{BeforeAndAfterAll, Inside}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
