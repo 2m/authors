@@ -77,7 +77,7 @@ inThisBuild(
     bintrayOrganization := Some("2m"),
     scalafmtOnCompile := true,
     scalafixDependencies ++= Seq(
-        "com.nequissimus" %% "sort-imports" % "0.5.3"
+        "com.nequissimus" %% "sort-imports" % "0.5.4"
       ),
     // show full stack traces and test case durations
     testOptions in Test += Tests.Argument("-oDF")
