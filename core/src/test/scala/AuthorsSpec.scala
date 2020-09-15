@@ -87,8 +87,7 @@ class AuthorsSpec
         .runWith(Sink.head)
 
       whenReady(stats) {
-        _ should matchPattern {
-          case AuthorStats(_, _, Stats(9, 0, 2)) =>
+        _ should matchPattern { case AuthorStats(_, _, Stats(9, 0, 2)) =>
         }
       }
     }
@@ -114,8 +113,7 @@ class AuthorsSpec
         .runWith(Sink.head)
 
       whenReady(stats) {
-        _ should matchPattern {
-          case AuthorStats(_, _, Stats(9, 0, 2)) =>
+        _ should matchPattern { case AuthorStats(_, _, Stats(9, 0, 2)) =>
         }
       }
     }
@@ -135,8 +133,7 @@ class AuthorsSpec
         .runWith(Sink.head)
 
       whenReady(stats) {
-        _ should matchPattern {
-          case AuthorStats(_, _, Stats(0, 0, 1)) =>
+        _ should matchPattern { case AuthorStats(_, _, Stats(0, 0, 1)) =>
         }
       }
     }

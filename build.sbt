@@ -56,8 +56,8 @@ lazy val cli = project
     name := "authors-cli",
     scalaVersion := ScalaVersion,
     libraryDependencies ++= Seq(
-        "org.rogach" %% "scallop" % "3.5.1"
-      )
+      "org.rogach" %% "scallop" % "3.5.1"
+    )
   )
 
 inThisBuild(
@@ -69,16 +69,16 @@ inThisBuild(
     homepage := Some(url("https://github.com/2m/authors")),
     scmInfo := Some(ScmInfo(url("https://github.com/2m/authors"), "git@github.com:2m/authors.git")),
     developers += Developer(
-        "contributors",
-        "Contributors",
-        "https://gitter.im/2m/authors",
-        url("https://github.com/2m/authors/graphs/contributors")
-      ),
+      "contributors",
+      "Contributors",
+      "https://gitter.im/2m/authors",
+      url("https://github.com/2m/authors/graphs/contributors")
+    ),
     bintrayOrganization := Some("2m"),
     scalafmtOnCompile := true,
     scalafixDependencies ++= Seq(
-        "com.nequissimus" %% "sort-imports" % "0.5.4"
-      ),
+      "com.nequissimus" %% "sort-imports" % "0.5.4"
+    ),
     // show full stack traces and test case durations
     testOptions in Test += Tests.Argument("-oDF")
   )
