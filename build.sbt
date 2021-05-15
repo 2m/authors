@@ -1,4 +1,6 @@
 val ScalaVersion = "2.12.13"
+val AkkaStreamsJson = "0.7.0"
+val Circe = "0.13.0"
 
 lazy val authors = project
   .in(file("."))
@@ -12,27 +14,24 @@ lazy val core = project
       val Akka = "2.6.14"
       val AkkaHttp = "10.2.4"
       libraryDependencies ++= Seq(
-        "com.typesafe.akka"    %% "akka-actor"               % Akka,
-        "com.typesafe.akka"    %% "akka-stream"              % Akka,
-        "com.typesafe.akka"    %% "akka-slf4j"               % Akka,
-        "com.typesafe.akka"    %% "akka-http"                % AkkaHttp,
-        "com.tradeshift"       %% "ts-reaktive-marshal-akka" % "0.16.3" exclude ("org.slf4j", "slf4j-log4j12"),
-        "com.madgag.scala-git" %% "scala-git"                % "4.2",
-        "ch.qos.logback"        % "logback-classic"          % "1.2.3",
-        "org.scalatest"        %% "scalatest"                % "3.2.8" % "test",
-        "com.typesafe.akka"    %% "akka-testkit"             % Akka    % "test",
-        // these come from ts-reaktive-marshal-akka
-        "com.typesafe.akka" %% "akka-persistence"       % Akka,
-        "com.typesafe.akka" %% "akka-remote"            % Akka,
-        "com.typesafe.akka" %% "akka-cluster"           % Akka,
-        "com.typesafe.akka" %% "akka-cluster-tools"     % Akka,
-        "com.typesafe.akka" %% "akka-distributed-data"  % Akka,
-        "com.typesafe.akka" %% "akka-persistence-query" % Akka,
-        "com.typesafe.akka" %% "akka-cluster-sharding"  % Akka,
-        "com.typesafe.akka" %% "akka-protobuf"          % Akka,
-        "com.typesafe.akka" %% "akka-http-jackson"      % AkkaHttp
+        "com.typesafe.akka"    %% "akka-actor"                         % Akka,
+        "com.typesafe.akka"    %% "akka-stream"                        % Akka,
+        "com.typesafe.akka"    %% "akka-slf4j"                         % Akka,
+        "com.typesafe.akka"    %% "akka-http"                          % AkkaHttp,
+        "com.madgag.scala-git" %% "scala-git"                          % "4.2",
+        "ch.qos.logback"        % "logback-classic"                    % "1.2.3",
+        "org.mdedetrich"       %% "akka-stream-circe"                  % AkkaStreamsJson,
+        "org.mdedetrich"       %% "akka-http-circe"                    % AkkaStreamsJson,
+        "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.0-M1",
+        "io.circe"             %% "circe-generic"                      % Circe,
+        "io.circe"             %% "circe-generic-extras"               % Circe,
+        "org.scalatest"        %% "scalatest"                          % "3.2.8" % "test",
+        "com.typesafe.akka"    %% "akka-testkit"                       % Akka    % "test"
       )
-    }
+    },
+    addCompilerPlugin(
+      "org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full
+    )
   )
   .enablePlugins(AutomateHeaderPlugin)
 

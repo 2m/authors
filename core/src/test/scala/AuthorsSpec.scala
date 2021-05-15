@@ -22,16 +22,18 @@ import scala.concurrent.duration._
 
 import akka.actor.ActorSystem
 import akka.event.Logging
+import akka.stream.alpakka.json.scaladsl.JsonReader
 import akka.stream.scaladsl.{FileIO, Sink, Source}
 import akka.testkit.TestKit
 
-import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
 import com.typesafe.config.ConfigFactory
+import org.mdedetrich.akka.stream.support.CirceStreamSupport
 import org.scalatest.{BeforeAndAfterAll, Inside}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
+import lt.dvim.authors.Authors._
 import lt.dvim.authors.GithubProtocol._
 
 object AuthorsSpec {
@@ -54,11 +56,22 @@ class AuthorsSpec
     "parse compare json" in {
       val res = FileIO
         .fromPath(Paths.get(getClass.getResource("/compare.json").toURI), 64)
-        .via(ActsonReader.instance)
-        .via(ProtocolReader.of(GithubProtocol.compareProto))
+        .via(JsonReader.select("$.commits[*]"))
+        .via(CirceStreamSupport.decode[Commit])
         .runFold(Seq.empty[Commit])(_ :+ _)
 
-      res.futureValue should have length 2
+      res.futureValue should contain theSameElementsInOrderAs Seq(
+        Commit(
+          "03ac2f41efff9cdfac9419ba7e6e34b30f9111e0",
+          GitCommit("Add some contents", GitAuthor("Martynas Mickevičius", "martynas@2m.lt")),
+          Some(GithubAuthor("2m", "https://github.com/2m", "https://avatars0.githubusercontent.com/u/422086?v=3"))
+        ),
+        Commit(
+          "e5fee6fbc982cea605a820c82a8ae8f14ead26e0",
+          GitCommit("Add some other contents", GitAuthor("Test User", "test.user@2m.lt")),
+          None
+        )
+      )
     }
 
     "get commit stats from sha" in {
@@ -72,14 +85,12 @@ class AuthorsSpec
         List(
           Commit(
             "f576a45",
-            "message",
-            GitAuthor("test", "test@test.lt"),
+            GitCommit("message", GitAuthor("test", "test@test.lt")),
             Some(GithubAuthor("test", "http://users/test", "http://avatars/test"))
           ),
           Commit(
             "bce0e63",
-            "message",
-            GitAuthor("test", "test@test.lt"),
+            GitCommit("message", GitAuthor("test", "test@test.lt")),
             Some(GithubAuthor("test", "http://users/test", "http://avatars/test"))
           )
         )
@@ -98,14 +109,12 @@ class AuthorsSpec
         List(
           Commit(
             "f576a45",
-            "message",
-            GitAuthor("test", "test1@test.lt"),
+            GitCommit("message", GitAuthor("test", "test1@test.lt")),
             Some(GithubAuthor("test", "http://users/test", "http://avatars/test"))
           ),
           Commit(
             "bce0e63",
-            "message",
-            GitAuthor("test", "test2@test.lt"),
+            GitCommit("message", GitAuthor("test", "test2@test.lt")),
             Some(GithubAuthor("test", "http://users/test", "http://avatars/test"))
           )
         )
@@ -124,8 +133,7 @@ class AuthorsSpec
         List(
           Commit(
             "901392a",
-            "message",
-            GitAuthor("test", "test1@test.lt"),
+            GitCommit("message", GitAuthor("test", "test1@test.lt")),
             Some(GithubAuthor("test", "http://users/test", "http://avatars/test"))
           )
         )
