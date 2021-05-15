@@ -1,10 +1,10 @@
-# [sbt-authors][] [![scaladex-badge][]][scaladex] [![travis-badge][]][travis] [![gitter-badge][]][gitter]
+# [sbt-authors][] [![scaladex-badge][]][scaladex] [![ci-badge][]][ci] [![gitter-badge][]][gitter]
 
 [sbt-authors]:        https://github.com/2m/authors
 [scaladex]:           https://index.scala-lang.org/2m/authors
 [scaladex-badge]:     https://index.scala-lang.org/2m/authors/latest.svg
-[travis]:             https://travis-ci.org/2m/authors
-[travis-badge]:       https://travis-ci.org/2m/authors.svg?branch=master
+[ci]:                 https://github.com/2m/authors/actions
+[ci-badge]:           https://github.com/2m/authors/workflows/ci/badge.svg
 [gitter]:             https://gitter.im/2m/authors
 [gitter-badge]:       https://badges.gitter.im/2m/authors.svg
 [asciicast]:          https://asciinema.org/a/221093
@@ -23,8 +23,7 @@ Inspired by:
 Add this to your sbt build plugins, in either `project/plugins.sbt` or `~/.sbt/1.0/plugins/build.sbt`:
 
 ```scala
-addSbtPlugin("lt.dvim.authors" % "sbt-authors" % "1.2")
-resolvers += Resolver.bintrayRepo("jypma", "maven") // for ts-reaktive
+addSbtPlugin("lt.dvim.authors" % "sbt-authors" % "1.3")
 ```
 
 `sbt-authors` is an AutoPlugin and therefore that is all that is required.
