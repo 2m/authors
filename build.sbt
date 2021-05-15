@@ -70,6 +70,7 @@ inThisBuild(
       "https://gitter.im/2m/authors",
       url("https://github.com/2m/authors/graphs/contributors")
     ),
+    sonatypeProfileName := "lt.dvim",
     scalafmtOnCompile := true,
     scalafixDependencies ++= Seq(
       "com.nequissimus" %% "sort-imports" % "0.5.5"
