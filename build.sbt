@@ -1,5 +1,5 @@
 val ScalaVersion = "2.12.13"
-val AkkaStreamsJson = "0.7.0"
+val AkkaStreamsJson = "1.18.0"
 val Circe = "0.13.0"
 
 lazy val authors = project
