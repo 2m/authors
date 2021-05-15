@@ -28,21 +28,26 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.marshalling.PredefinedToRequestMarshallers._
 import akka.http.scaladsl.model.{HttpRequest, Uri}
+import akka.stream.alpakka.json.scaladsl.JsonReader
 import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
 
 import com.madgag.git._
-import com.tradeshift.reaktive.marshal.stream.{ActsonReader, ProtocolReader}
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.internal.storage.file.FileRepository
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.util.io.DisabledOutputStream
+import org.mdedetrich.akka.stream.support.CirceStreamSupport
 
-import lt.dvim.authors.GithubProtocol.{AuthorStats, Commit, Stats}
+import lt.dvim.authors.Authors.{AuthorStats, Stats}
+import lt.dvim.authors.GithubProtocol.{Commit, GitAuthor, GithubAuthor}
 
 object Authors {
   final val MaxAuthors = 1024
   final val GithubApiUrl = "api.github.com"
+
+  final case class Stats(additions: Int, deletions: Int, commits: Int)
+  final case class AuthorStats(gitAuthor: GitAuthor, githubAuthor: Option[GithubAuthor], stats: Stats)
 
   def summary(repo: Option[String], from: String, to: String, path: String): Future[String] = {
     val cld = classOf[ActorSystem].getClassLoader
@@ -55,8 +60,8 @@ object Authors {
       parseRepo(gitRepository.getConfig().getString("remote", "origin", "url"))
 
     DiffSource(repo.getOrElse(parsedRepo), from, to)
-      .via(ActsonReader.instance)
-      .via(ProtocolReader.of(GithubProtocol.compareProto))
+      .via(JsonReader.select("$.commits[*]"))
+      .via(CirceStreamSupport.decode[Commit])
       .via(StatsAggregator())
       .via(SortingMachine())
       .via(MarkdownConverter())
@@ -120,10 +125,10 @@ object SortingMachine {
 object StatsAggregator {
   def apply()(implicit repo: FileRepository, log: LoggingAdapter): Flow[Commit, AuthorStats, NotUsed] =
     Flow[Commit]
-      .filterNot(_.message.startsWith("Merge pull request"))
-      .groupBy(Authors.MaxAuthors, commit => commit.githubAuthor.map(_.login).getOrElse(commit.gitAuthor.email))
+      .filterNot(_.commit.message.startsWith("Merge pull request"))
+      .groupBy(Authors.MaxAuthors, commit => commit.author.map(_.login).getOrElse(commit.commit.author.email))
       .log("Commit")
-      .map(commit => AuthorStats(commit.gitAuthor, commit.githubAuthor, Authors.shaToStats(commit.sha)))
+      .map(commit => AuthorStats(commit.commit.author, commit.author, Authors.shaToStats(commit.sha)))
       .reduce((aggr, elem) =>
         aggr.copy(
           stats = Stats(
@@ -143,7 +148,7 @@ object MarkdownConverter {
         val authorId = author.githubAuthor.map { gh =>
           // using html instead of markdown, because default
           // avatars come from github not resized
-          s"""[<img width="20" alt="${gh.login}" src="${gh.avatar}&amp;s=40"/> **${gh.login}**](${gh.url})"""
+          s"""[<img width="20" alt="${gh.login}" src="${gh.avatarUrl}&amp;s=40"/> **${gh.login}**](${gh.htmlUrl})"""
         } getOrElse {
           author.gitAuthor.name
         }
