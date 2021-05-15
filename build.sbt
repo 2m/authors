@@ -1,5 +1,4 @@
-val ScalaVersion = "2.13.5"
-val AkkaStreamsJson = "0.7.0"
+val ScalaVersion = "2.12.13"
 val Circe = "0.13.0"
 
 lazy val authors = project
@@ -20,12 +19,11 @@ lazy val core = project
         "com.typesafe.akka"    %% "akka-http"                          % AkkaHttp,
         "com.madgag.scala-git" %% "scala-git"                          % "4.2",
         "ch.qos.logback"        % "logback-classic"                    % "1.2.3",
-        "org.mdedetrich"       %% "akka-stream-circe"                  % AkkaStreamsJson,
-        "org.mdedetrich"       %% "akka-http-circe"                    % AkkaStreamsJson,
+        "org.mdedetrich"       %% "akka-stream-circe"                  % "0.7.0",
         "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.0-M1",
         "io.circe"             %% "circe-generic"                      % Circe,
         "io.circe"             %% "circe-generic-extras"               % Circe,
-        "org.scalatest"        %% "scalatest"                          % "3.2.8" % "test",
+        "org.scalatest"        %% "scalatest"                          % "3.2.9" % "test",
         "com.typesafe.akka"    %% "akka-testkit"                       % Akka    % "test"
       )
     },
