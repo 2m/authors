@@ -25,7 +25,7 @@ lazy val core = project
         "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.0-M1",
         "io.circe"             %% "circe-generic"                      % Circe,
         "io.circe"             %% "circe-generic-extras"               % Circe,
-        "org.scalatest"        %% "scalatest"                          % "3.2.8" % "test",
+        "org.scalatest"        %% "scalatest"                          % "3.2.9" % "test",
         "com.typesafe.akka"    %% "akka-testkit"                       % Akka    % "test"
       )
     },
