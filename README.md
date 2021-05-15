@@ -1,4 +1,4 @@
-# [sbt-authors][] [![scaladex-badge][]][scaladex] [![travis-badge][]][travis] [![gitter-badge][]][gitter]
+# [sbt-authors][] [![scaladex-badge][]][scaladex] [![ci-badge][]][ci] [![gitter-badge][]][gitter]
 
 [sbt-authors]:        https://github.com/2m/authors
 [scaladex]:           https://index.scala-lang.org/2m/authors
