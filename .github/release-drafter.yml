@@ -2,6 +2,6 @@ template: |
   ## What’s Changed
 
   $CHANGES
-categories:
-- title: 'Dependency Updates'
-  label: 'dependencies'
+
+exclude-labels:
+- 'dependencies'

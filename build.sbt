@@ -1,5 +1,4 @@
 val ScalaVersion = "2.12.13"
-val Circe = "0.13.0"
 
 lazy val authors = project
   .in(file("."))
@@ -8,10 +7,10 @@ lazy val authors = project
 lazy val core = project
   .settings(
     name := "authors-core",
-    scalaVersion := ScalaVersion,
-    resolvers += Resolver.bintrayRepo("jypma", "maven"), {
+    scalaVersion := ScalaVersion, {
       val Akka = "2.6.14"
       val AkkaHttp = "10.2.4"
+      val Circe = "0.13.0"
       libraryDependencies ++= Seq(
         "com.typesafe.akka"    %% "akka-actor"                         % Akka,
         "com.typesafe.akka"    %% "akka-stream"                        % Akka,
@@ -40,7 +39,7 @@ lazy val plugin = project
     name := "sbt-authors",
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedDependencies := {
-      val p1 = (publishLocal in core).value
+      val p1 = (core / publishLocal).value
       val p2 = publishLocal.value
     },
     scriptedBufferLog := false
@@ -71,12 +70,11 @@ inThisBuild(
       "https://gitter.im/2m/authors",
       url("https://github.com/2m/authors/graphs/contributors")
     ),
-    bintrayOrganization := Some("2m"),
     scalafmtOnCompile := true,
     scalafixDependencies ++= Seq(
       "com.nequissimus" %% "sort-imports" % "0.5.5"
     ),
     // show full stack traces and test case durations
-    testOptions in Test += Tests.Argument("-oDF")
+    Test / testOptions += Tests.Argument("-oDF")
   )
 )
