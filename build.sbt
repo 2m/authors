@@ -1,4 +1,4 @@
-val ScalaVersion = "2.12.13"
+val ScalaVersion = "2.13.5"
 val Circe = "0.13.0"
 
 lazy val authors = project
