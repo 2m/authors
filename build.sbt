@@ -2,6 +2,7 @@ val ScalaVersion = "2.12.13"
 
 lazy val authors = project
   .in(file("."))
+  .settings(sonatypeProfileName := "lt.dvim")
   .aggregate(core, plugin, cli)
 
 lazy val core = project
@@ -28,8 +29,7 @@ lazy val core = project
     },
     addCompilerPlugin(
       "org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full
-    ),
-    sonatypeProfileName := "lt.dvim"
+    )
   )
   .enablePlugins(AutomateHeaderPlugin)
 
@@ -43,8 +43,7 @@ lazy val plugin = project
       val p1 = (core / publishLocal).value
       val p2 = publishLocal.value
     },
-    scriptedBufferLog := false,
-    sonatypeProfileName := "lt.dvim"
+    scriptedBufferLog := false
   )
 
 lazy val cli = project
@@ -55,8 +54,7 @@ lazy val cli = project
     scalaVersion := ScalaVersion,
     libraryDependencies ++= Seq(
       "org.rogach" %% "scallop" % "4.0.2"
-    ),
-    sonatypeProfileName := "lt.dvim"
+    )
   )
 
 inThisBuild(
