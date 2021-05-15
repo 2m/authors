@@ -1,4 +1,4 @@
-val ScalaVersion = "2.12.13"
+val ScalaVersion = "2.13.5"
 val AkkaStreamsJson = "0.7.0"
 val Circe = "0.13.0"
 
