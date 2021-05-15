@@ -4,7 +4,7 @@ name: ci
 on:  # yamllint disable-line rule:truthy
   push:
     branches:
-    - master
+    - main
   pull_request:
 
 jobs:
@@ -15,13 +15,15 @@ jobs:
       fail-fast: false
     steps:
     - uses: actions/checkout@v2.3.4
-    - uses: olafurpg/setup-scala@v10
+    - uses: coursier/cache-action@v6
+    - uses: laughedelic/coursier-setup@v1
       with:
-        java-version: adopt@1.11
-    - run: sbt ";scalafixAll --check"
-    - run: sbt scalafmtCheckAll
-    - run: sbt scalafmtSbtCheck
-    - run: sbt headerCheckAll
+        jvm: adopt:11
+        apps: sbtn
+    - run: sbtn scalafixAll --check
+    - run: sbtn scalafmtCheckAll
+    - run: sbtn scalafmtSbtCheck
+    - run: sbtn headerCheckAll
     - name: yaml-lint
       uses: ibiqlik/action-yamllint@v3
 
@@ -32,11 +34,13 @@ jobs:
       fail-fast: false
     steps:
     - uses: actions/checkout@v2.3.4
-    - uses: olafurpg/setup-scala@v10
+    - uses: coursier/cache-action@v6
+    - uses: laughedelic/coursier-setup@v1
       with:
-        java-version: adopt@1.11
+        jvm: adopt:11
+        apps: sbtn
     - run: git submodule update --init
-    - run: sbt test
+    - run: sbtn test
     - uses: GabrielBB/xvfb-action@v1.5
       with:
         run: sbt scripted

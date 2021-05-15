@@ -3,6 +3,7 @@ pull_request_rules:
   conditions:
   - status-success~=Format and style checks
   - status-success~=Compile and test
+  - author=scala-steward
   actions:
     merge:
       method: merge
