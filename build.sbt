@@ -9,7 +9,7 @@ lazy val core = project
   .settings(
     name := "authors-core",
     scalaVersion := ScalaVersion, {
-      val Akka = "2.6.14"
+      val Akka = "2.6.15"
       val AkkaHttp = "10.2.4"
       val Circe = "0.14.1"
       libraryDependencies ++= Seq(
