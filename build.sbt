@@ -24,7 +24,7 @@ lazy val core = project
         "io.circe"             %% "circe-generic"                      % Circe,
         "io.circe"             %% "circe-generic-extras"               % Circe,
         "org.scalatest"        %% "scalatest"                          % "3.2.10" % "test",
-        "com.typesafe.akka"    %% "akka-testkit"                       % Akka    % "test"
+        "com.typesafe.akka"    %% "akka-testkit"                       % Akka     % "test"
       )
     },
     addCompilerPlugin(
