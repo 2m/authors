@@ -20,10 +20,10 @@ jobs:
       with:
         jvm: adopt:11
         apps: sbtn
-    - run: sbtn scalafixAll --check
-    - run: sbtn scalafmtCheckAll
-    - run: sbtn scalafmtSbtCheck
-    - run: sbtn headerCheckAll
+    - run: sbtn -v scalafixAll --check
+    - run: sbtn -v scalafmtCheckAll
+    - run: sbtn -v scalafmtSbtCheck
+    - run: sbtn -v headerCheckAll
     - name: yaml-lint
       uses: ibiqlik/action-yamllint@v3
 
@@ -40,7 +40,7 @@ jobs:
         jvm: adopt:11
         apps: sbtn
     - run: git submodule update --init
-    - run: sbtn test
+    - run: sbtn -v test
     - uses: GabrielBB/xvfb-action@v1.5
       with:
         run: sbt scripted

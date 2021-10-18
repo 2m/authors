@@ -1,4 +1,4 @@
-val ScalaVersion = "2.13.6"
+val ScalaVersion = "2.12.15"
 
 lazy val authors = project
   .in(file("."))
@@ -9,22 +9,22 @@ lazy val core = project
   .settings(
     name := "authors-core",
     scalaVersion := ScalaVersion, {
-      val Akka = "2.6.14"
-      val AkkaHttp = "10.2.4"
-      val Circe = "0.13.0"
+      val Akka = "2.6.17"
+      val AkkaHttp = "10.2.6"
+      val Circe = "0.14.1"
       libraryDependencies ++= Seq(
         "com.typesafe.akka"    %% "akka-actor"                         % Akka,
         "com.typesafe.akka"    %% "akka-stream"                        % Akka,
         "com.typesafe.akka"    %% "akka-slf4j"                         % Akka,
         "com.typesafe.akka"    %% "akka-http"                          % AkkaHttp,
         "com.madgag.scala-git" %% "scala-git"                          % "4.2",
-        "ch.qos.logback"        % "logback-classic"                    % "1.2.3",
-        "org.mdedetrich"       %% "akka-stream-circe"                  % "0.7.0",
-        "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.0",
+        "ch.qos.logback"        % "logback-classic"                    % "1.2.6",
+        "org.mdedetrich"       %% "akka-stream-circe"                  % "0.8.0",
+        "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.3",
         "io.circe"             %% "circe-generic"                      % Circe,
         "io.circe"             %% "circe-generic-extras"               % Circe,
-        "org.scalatest"        %% "scalatest"                          % "3.2.9" % "test",
-        "com.typesafe.akka"    %% "akka-testkit"                       % Akka    % "test"
+        "org.scalatest"        %% "scalatest"                          % "3.2.10" % "test",
+        "com.typesafe.akka"    %% "akka-testkit"                       % Akka     % "test"
       )
     },
     addCompilerPlugin(
@@ -53,7 +53,7 @@ lazy val cli = project
     name := "authors-cli",
     scalaVersion := ScalaVersion,
     libraryDependencies ++= Seq(
-      "org.rogach" %% "scallop" % "4.0.2"
+      "org.rogach" %% "scallop" % "4.0.4"
     )
   )
 
