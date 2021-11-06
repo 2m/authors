@@ -53,7 +53,7 @@ lazy val cli = project
     name := "authors-cli",
     scalaVersion := ScalaVersion,
     libraryDependencies ++= Seq(
-      "org.rogach" %% "scallop" % "4.0.4"
+      "org.rogach" %% "scallop" % "4.1.0"
     )
   )
 
