@@ -73,7 +73,7 @@ inThisBuild(
     ),
     scalafmtOnCompile := true,
     scalafixDependencies ++= Seq(
-      "com.nequissimus" %% "sort-imports" % "0.6.0"
+      "com.nequissimus" %% "sort-imports" % "0.6.1"
     ),
     // show full stack traces and test case durations
     Test / testOptions += Tests.Argument("-oDF")
