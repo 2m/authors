@@ -9,7 +9,7 @@ lazy val core = project
   .settings(
     name := "authors-core",
     scalaVersion := ScalaVersion, {
-      val Akka = "2.6.17"
+      val Akka = "2.6.18"
       val AkkaHttp = "10.2.7"
       val Circe = "0.14.1"
       libraryDependencies ++= Seq(
@@ -18,12 +18,12 @@ lazy val core = project
         "com.typesafe.akka"    %% "akka-slf4j"                         % Akka,
         "com.typesafe.akka"    %% "akka-http"                          % AkkaHttp,
         "com.madgag.scala-git" %% "scala-git"                          % "4.2",
-        "ch.qos.logback"        % "logback-classic"                    % "1.2.7",
-        "org.mdedetrich"       %% "akka-stream-circe"                  % "0.8.0",
+        "ch.qos.logback"        % "logback-classic"                    % "1.2.10",
+        "org.mdedetrich"       %% "akka-stream-circe"                  % "0.8.2",
         "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.3",
         "io.circe"             %% "circe-generic"                      % Circe,
         "io.circe"             %% "circe-generic-extras"               % Circe,
-        "org.scalatest"        %% "scalatest"                          % "3.2.10" % "test",
+        "org.scalatest"        %% "scalatest"                          % "3.2.11" % "test",
         "com.typesafe.akka"    %% "akka-testkit"                       % Akka     % "test"
       )
     },
@@ -73,7 +73,7 @@ inThisBuild(
     ),
     scalafmtOnCompile := true,
     scalafixDependencies ++= Seq(
-      "com.nequissimus" %% "sort-imports" % "0.5.5"
+      "com.nequissimus" %% "sort-imports" % "0.6.1"
     ),
     // show full stack traces and test case durations
     Test / testOptions += Tests.Argument("-oDF")
