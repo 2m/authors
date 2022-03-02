@@ -19,7 +19,7 @@ lazy val core = project
         "com.typesafe.akka"    %% "akka-http"                          % AkkaHttp,
         "com.madgag.scala-git" %% "scala-git"                          % "4.2",
         "ch.qos.logback"        % "logback-classic"                    % "1.2.10",
-        "org.mdedetrich"       %% "akka-stream-circe"                  % "0.8.0",
+        "org.mdedetrich"       %% "akka-stream-circe"                  % "0.8.2",
         "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.3",
         "io.circe"             %% "circe-generic"                      % Circe,
         "io.circe"             %% "circe-generic-extras"               % Circe,
