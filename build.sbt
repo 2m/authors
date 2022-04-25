@@ -1,4 +1,4 @@
-val ScalaVersion = "2.12.15"
+val ScalaVersion = "2.13.8"
 
 lazy val authors = project
   .in(file("."))
