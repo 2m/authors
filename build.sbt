@@ -38,7 +38,7 @@ lazy val plugin = project
   .enablePlugins(SbtPlugin, AutomateHeaderPlugin)
   .settings(
     name := "sbt-authors",
-    scriptedLaunchOpts += ("-Dproject.version=" + version.value),
+    scriptedLaunchOpts += "-Dproject.version=" + version.value,
     scriptedDependencies := {
       val p1 = (core / publishLocal).value
       val p2 = publishLocal.value
