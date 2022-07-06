@@ -1,4 +1,4 @@
-val ScalaVersion = "2.12.15"
+val ScalaVersion = "2.12.16"
 
 lazy val authors = project
   .in(file("."))
@@ -9,21 +9,21 @@ lazy val core = project
   .settings(
     name := "authors-core",
     scalaVersion := ScalaVersion, {
-      val Akka = "2.6.18"
-      val AkkaHttp = "10.2.7"
-      val Circe = "0.14.1"
+      val Akka = "2.6.19"
+      val AkkaHttp = "10.2.9"
+      val Circe = "0.14.2"
       libraryDependencies ++= Seq(
         "com.typesafe.akka"    %% "akka-actor"                         % Akka,
         "com.typesafe.akka"    %% "akka-stream"                        % Akka,
         "com.typesafe.akka"    %% "akka-slf4j"                         % Akka,
         "com.typesafe.akka"    %% "akka-http"                          % AkkaHttp,
         "com.madgag.scala-git" %% "scala-git"                          % "4.2",
-        "ch.qos.logback"        % "logback-classic"                    % "1.2.10",
-        "org.mdedetrich"       %% "akka-stream-circe"                  % "0.8.0",
-        "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.3",
+        "ch.qos.logback"        % "logback-classic"                    % "1.2.11",
+        "org.mdedetrich"       %% "akka-stream-circe"                  % "0.8.3",
+        "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.4",
         "io.circe"             %% "circe-generic"                      % Circe,
         "io.circe"             %% "circe-generic-extras"               % Circe,
-        "org.scalatest"        %% "scalatest"                          % "3.2.10" % "test",
+        "org.scalatest"        %% "scalatest"                          % "3.2.12" % "test",
         "com.typesafe.akka"    %% "akka-testkit"                       % Akka     % "test"
       )
     },
@@ -38,7 +38,7 @@ lazy val plugin = project
   .enablePlugins(SbtPlugin, AutomateHeaderPlugin)
   .settings(
     name := "sbt-authors",
-    scriptedLaunchOpts += ("-Dproject.version=" + version.value),
+    scriptedLaunchOpts += "-Dproject.version=" + version.value,
     scriptedDependencies := {
       val p1 = (core / publishLocal).value
       val p2 = publishLocal.value
