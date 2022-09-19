@@ -1,4 +1,4 @@
-val ScalaVersion = "2.12.16"
+val ScalaVersion = "2.12.17"
 
 lazy val authors = project
   .in(file("."))
@@ -9,8 +9,8 @@ lazy val core = project
   .settings(
     name := "authors-core",
     scalaVersion := ScalaVersion, {
-      val Akka = "2.6.19"
-      val AkkaHttp = "10.2.9"
+      val Akka = "2.6.20"
+      val AkkaHttp = "10.2.10"
       val Circe = "0.14.2"
       libraryDependencies ++= Seq(
         "com.typesafe.akka"    %% "akka-actor"                         % Akka,
@@ -18,12 +18,12 @@ lazy val core = project
         "com.typesafe.akka"    %% "akka-slf4j"                         % Akka,
         "com.typesafe.akka"    %% "akka-http"                          % AkkaHttp,
         "com.madgag.scala-git" %% "scala-git"                          % "4.2",
-        "ch.qos.logback"        % "logback-classic"                    % "1.2.11",
+        "ch.qos.logback"        % "logback-classic"                    % "1.4.1",
         "org.mdedetrich"       %% "akka-stream-circe"                  % "0.8.3",
         "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.4",
         "io.circe"             %% "circe-generic"                      % Circe,
         "io.circe"             %% "circe-generic-extras"               % Circe,
-        "org.scalatest"        %% "scalatest"                          % "3.2.12" % "test",
+        "org.scalatest"        %% "scalatest"                          % "3.2.13" % "test",
         "com.typesafe.akka"    %% "akka-testkit"                       % Akka     % "test"
       )
     },
