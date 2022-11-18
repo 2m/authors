@@ -11,19 +11,19 @@ lazy val core = project
     scalaVersion := ScalaVersion, {
       val Akka = "2.6.20"
       val AkkaHttp = "10.2.10"
-      val Circe = "0.14.2"
+      val Circe = "0.14.3"
       libraryDependencies ++= Seq(
         "com.typesafe.akka"    %% "akka-actor"                         % Akka,
         "com.typesafe.akka"    %% "akka-stream"                        % Akka,
         "com.typesafe.akka"    %% "akka-slf4j"                         % Akka,
         "com.typesafe.akka"    %% "akka-http"                          % AkkaHttp,
         "com.madgag.scala-git" %% "scala-git"                          % "4.2",
-        "ch.qos.logback"        % "logback-classic"                    % "1.4.1",
+        "ch.qos.logback"        % "logback-classic"                    % "1.4.4",
         "org.mdedetrich"       %% "akka-stream-circe"                  % "0.8.3",
         "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.4",
         "io.circe"             %% "circe-generic"                      % Circe,
         "io.circe"             %% "circe-generic-extras"               % Circe,
-        "org.scalatest"        %% "scalatest"                          % "3.2.13" % "test",
+        "org.scalatest"        %% "scalatest"                          % "3.2.14" % "test",
         "com.typesafe.akka"    %% "akka-testkit"                       % Akka     % "test"
       )
     },
