@@ -17,12 +17,12 @@ lazy val core = project
         "com.typesafe.akka"    %% "akka-slf4j"                         % Akka,
         "com.typesafe.akka"    %% "akka-http"                          % AkkaHttp,
         "com.madgag.scala-git" %% "scala-git"                          % "4.2",
-        "ch.qos.logback"        % "logback-classic"                    % "1.4.7",
-        "org.mdedetrich"       %% "akka-stream-circe"                  % "0.8.3",
+        "ch.qos.logback"        % "logback-classic"                    % "1.4.8",
+        "org.mdedetrich"       %% "akka-stream-circe"                  % "0.9.0",
         "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.4",
         "io.circe"             %% "circe-generic"                      % "0.14.5",
         "io.circe"             %% "circe-generic-extras"               % "0.14.3",
-        "org.scalatest"        %% "scalatest"                          % "3.2.15" % "test",
+        "org.scalatest"        %% "scalatest"                          % "3.2.16" % "test",
         "com.typesafe.akka"    %% "akka-testkit"                       % Akka     % "test"
       )
     },
