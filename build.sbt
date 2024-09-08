@@ -20,7 +20,7 @@ lazy val core = project
         "ch.qos.logback"        % "logback-classic"                    % "1.5.7",
         "org.mdedetrich"       %% "akka-stream-circe"                  % "0.9.0",
         "com.lightbend.akka"   %% "akka-stream-alpakka-json-streaming" % "3.0.4",
-        "io.circe"             %% "circe-generic"                      % "0.14.9",
+        "io.circe"             %% "circe-generic"                      % "0.14.10",
         "io.circe"             %% "circe-generic-extras"               % "0.14.4",
         "org.scalatest"        %% "scalatest"                          % "3.2.19" % "test",
         "com.typesafe.akka"    %% "akka-testkit"                       % Akka     % "test"
