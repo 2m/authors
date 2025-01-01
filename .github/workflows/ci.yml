@@ -42,6 +42,6 @@ jobs:
         cache: sbt
     - run: git submodule update --init
     - run: sbt --client test
-    - uses: GabrielBB/xvfb-action@v1.6
+    - uses: GabrielBB/xvfb-action@v1.7
       with:
         run: sbt scripted
