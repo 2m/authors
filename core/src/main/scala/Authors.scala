@@ -149,9 +149,8 @@ object MarkdownConverter {
           // using html instead of markdown, because default
           // avatars come from github not resized
           s"""[<img width="20" alt="${gh.login}" src="${gh.avatarUrl}&amp;s=40"/> **${gh.login}**](${gh.htmlUrl})"""
-        } getOrElse {
+        } getOrElse
           author.gitAuthor.name
-        }
 
         s"| $authorId | ${author.stats.commits} | ${author.stats.additions} | ${author.stats.deletions} |"
       }
